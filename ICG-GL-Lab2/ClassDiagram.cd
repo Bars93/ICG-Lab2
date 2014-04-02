@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="glCtrl">
+    <Position X="3.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIgggAAAAIAAAgBAJIAAIEAgACQAAAIACIBAACAgAAA=</HashCode>
+      <FileName>glCtrl.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="glModel">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAACAAAAAIIAAAYCAEAAAAEAAAIAIAAEBAAACEQ=</HashCode>
+      <FileName>glModel.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="glView">
+    <Position X="3.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AggAABAAAAAAgAACAAAAAAAAAJAAAAICAAAgAAAABAA=</HashCode>
+      <FileName>glView.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WinApp">
+    <Position X="7.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>A0AAEACAAAAEAAQARAQABACAAAABYAAAAABiIAJQAAA=</HashCode>
+      <FileName>WinApp.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WinCtrl">
+    <Position X="1.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIwhiAAAAAggCkAJAIAAAEAAAAQAgAAAAIBDQAAADEA=</HashCode>
+      <FileName>WinCtrl.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,1473 @@
+<?xml version="1.0" standalone="yes"?>
+<NewDataSet>
+  <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true">
+      <xs:complexType>
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+          <xs:element name="Solution_Path">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="SolutionPath" type="xs:string" minOccurs="0" />
+                <xs:element name="SolutionVersion" type="xs:string" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="PVS-Studio_Analysis_Log">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="FavIcon" type="xs:boolean" minOccurs="0" />
+                <xs:element name="Level" type="xs:unsignedInt" minOccurs="0" />
+                <xs:element name="DefaultOrder" type="xs:int" minOccurs="0" />
+                <xs:element name="ErrorCode" type="xs:string" minOccurs="0" />
+                <xs:element name="Message" type="xs:string" />
+                <xs:element name="Project" type="xs:string" minOccurs="0" />
+                <xs:element name="ShortFile" type="xs:string" minOccurs="0" />
+                <xs:element name="Line" type="xs:int" />
+                <xs:element name="FalseAlarm" type="xs:boolean" minOccurs="0" />
+                <xs:element name="File" type="xs:string" />
+                <xs:element name="CodePrev" type="xs:unsignedInt" minOccurs="0" />
+                <xs:element name="CodeCurrent" type="xs:unsignedInt" minOccurs="0" />
+                <xs:element name="CodeNext" type="xs:unsignedInt" minOccurs="0" />
+                <xs:element name="TrialMessage" type="xs:boolean" minOccurs="0" />
+                <xs:element name="Analyzer" type="xs:int" minOccurs="0" />
+                <xs:element name="LineExtension" type="xs:string" minOccurs="0" />
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+      <xs:unique name="Constraint1" msdata:PrimaryKey="true">
+        <xs:selector xpath=".//PVS-Studio_Analysis_Log" />
+        <xs:field xpath="Line" />
+        <xs:field xpath="Message" />
+        <xs:field xpath="File" />
+      </xs:unique>
+    </xs:element>
+  </xs:schema>
+  <Solution_Path>
+    <SolutionPath>C:\Users\Даниил\ICG-GL-Lab2\ICG-GL-Lab2.sln</SolutionPath>
+    <SolutionVersion>11.0</SolutionVersion>
+  </Solution_Path>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>1</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winctrl.h</ShortFile>
+    <Line>11</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winctrl.h</File>
+    <CodePrev>45270</CodePrev>
+    <CodeCurrent>127137</CodeCurrent>
+    <CodeNext>11496</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>2</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glview.h</ShortFile>
+    <Line>11</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glview.h</File>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>1142047486</CodeCurrent>
+    <CodeNext>542796800</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>3</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glview.h</ShortFile>
+    <Line>12</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glview.h</File>
+    <CodePrev>1142047486</CodePrev>
+    <CodeCurrent>542796800</CodeCurrent>
+    <CodeNext>5816</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>4</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glctrl.h</ShortFile>
+    <Line>11</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glctrl.h</File>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>9882957</CodeCurrent>
+    <CodeNext>2499501</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>5</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glctrl.h</ShortFile>
+    <Line>12</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glctrl.h</File>
+    <CodePrev>9882957</CodePrev>
+    <CodeCurrent>2499501</CodeCurrent>
+    <CodeNext>30469025</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>6</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glctrl.h</ShortFile>
+    <Line>13</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glctrl.h</File>
+    <CodePrev>2499501</CodePrev>
+    <CodeCurrent>30469025</CodeCurrent>
+    <CodeNext>46116039</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>7</DefaultOrder>
+    <ErrorCode>V2001</ErrorCode>
+    <Message>Consider using the extended version of the WaitForSingleObject function here: WaitForSingleObjectEx.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glctrl.cpp</ShortFile>
+    <Line>13</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glctrl.cpp</File>
+    <CodePrev>1181005</CodePrev>
+    <CodeCurrent>521003283</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>8</DefaultOrder>
+    <ErrorCode>V112</ErrorCode>
+    <Message>Dangerous magic number 32 used: ...ext(handle, 32, 24, 8)).</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glctrl.cpp</ShortFile>
+    <Line>29</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glctrl.cpp</File>
+    <CodePrev>2220605178</CodePrev>
+    <CodeCurrent>1408101325</CodeCurrent>
+    <CodeNext>123</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>9</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glctrl.cpp</ShortFile>
+    <Line>37</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glctrl.cpp</File>
+    <CodePrev>1230342832</CodePrev>
+    <CodeCurrent>2396205691</CodeCurrent>
+    <CodeNext>2968499</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>10</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glctrl.cpp</ShortFile>
+    <Line>60</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glctrl.cpp</File>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>3714674140</CodeCurrent>
+    <CodeNext>125</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>11</DefaultOrder>
+    <ErrorCode>V2001</ErrorCode>
+    <Message>Consider using the extended version of the Sleep function here: SleepEx.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glctrl.cpp</ShortFile>
+    <Line>78</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glctrl.cpp</File>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>4061506881</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>0</Level>
+    <DefaultOrder>12</DefaultOrder>
+    <ErrorCode>V004</ErrorCode>
+    <Message>Diagnostics from the 64-bit rule set are not entirely accurate without the appropriate 64-bit compiler. Consider utilizing 64-bit compiler if possible.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile xml:space="preserve"> </ShortFile>
+    <Line>1</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File xml:space="preserve"> </File>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>0</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>13</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glmodel.cpp</ShortFile>
+    <Line>73</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glmodel.cpp</File>
+    <CodePrev>2427120495</CodePrev>
+    <CodeCurrent>985628179</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>14</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glmodel.cpp</ShortFile>
+    <Line>76</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glmodel.cpp</File>
+    <CodePrev>2708306394</CodePrev>
+    <CodeCurrent>370776125</CodeCurrent>
+    <CodeNext>1548981115</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>15</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glmodel.cpp</ShortFile>
+    <Line>79</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glmodel.cpp</File>
+    <CodePrev>4946529</CodePrev>
+    <CodeCurrent>3914631</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>16</DefaultOrder>
+    <ErrorCode>V2001</ErrorCode>
+    <Message>Consider using the extended version of the GetDC function here: GetDCEx.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glview.cpp</ShortFile>
+    <Line>35</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glview.cpp</File>
+    <CodePrev>3527890005</CodePrev>
+    <CodeCurrent>36965213</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>17</DefaultOrder>
+    <ErrorCode>V2001</ErrorCode>
+    <Message>Consider using the extended version of the MessageBox function here: MessageBoxEx.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glview.cpp</ShortFile>
+    <Line>40</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\glview.cpp</File>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>410896133</CodeCurrent>
+    <CodeNext>1382432054</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>18</DefaultOrder>
+    <ErrorCode>V204</ErrorCode>
+    <Message>Explicit conversion from 32-bit integer type to pointer type: (WinCtrl *) GetWindowLongW(hwnd, (- 21))</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>12</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>24015355</CodePrev>
+    <CodeCurrent>1733974201</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>19</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>22</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>41262026</CodePrev>
+    <CodeCurrent>1457184446</CodeCurrent>
+    <CodeNext>156034169</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>20</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>27</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>844458358</CodePrev>
+    <CodeCurrent>2777000210</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>21</DefaultOrder>
+    <ErrorCode>V107</ErrorCode>
+    <Message>Implicit type conversion third argument '(LONG_PTR) ctrl' of function 'SetWindowLongW' to 32-bit type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>27</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>844458358</CodePrev>
+    <CodeCurrent>2777000210</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>22</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>41</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>568760</CodePrev>
+    <CodeCurrent>1520108480</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>23</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>45</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>141952</CodePrev>
+    <CodeCurrent>713966517</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>24</DefaultOrder>
+    <ErrorCode>V202</ErrorCode>
+    <Message>Explicit conversion from memsize type to 32-bit integer type: (int) wParam</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>45</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>141952</CodePrev>
+    <CodeCurrent>713966517</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>25</DefaultOrder>
+    <ErrorCode>V106</ErrorCode>
+    <Message>Implicit type conversion third argument '(int) wParam' of function 'size' to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>45</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>141952</CodePrev>
+    <CodeCurrent>713966517</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>26</DefaultOrder>
+    <ErrorCode>V220</ErrorCode>
+    <Message>Suspicious sequence of types castings: memsize -&gt; 32-bit integer -&gt; memsize. The value being casted: 'wParam'.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>45</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>141952</CodePrev>
+    <CodeCurrent>713966517</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>27</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>45</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>141952</CodePrev>
+    <CodeCurrent>713966517</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>28</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>53</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>1166669</CodePrev>
+    <CodeCurrent>395250829</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>29</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>63</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>1138098</CodePrev>
+    <CodeCurrent>4160701749</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>30</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>67</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>4546720</CodePrev>
+    <CodeCurrent>3692056578</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>31</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>71</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>284516</CodePrev>
+    <CodeCurrent>2907539377</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>32</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>75</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>1138244</CodePrev>
+    <CodeCurrent>3040219699</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>33</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>104</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>9084194</CodePrev>
+    <CodeCurrent>1757482368</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>34</DefaultOrder>
+    <ErrorCode>V202</ErrorCode>
+    <Message>Explicit conversion from memsize type to 32-bit integer type: (int) wParam</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>104</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>9084194</CodePrev>
+    <CodeCurrent>1757482368</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>35</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>104</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>9084194</CodePrev>
+    <CodeCurrent>1757482368</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>36</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>109</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>2271094</CodePrev>
+    <CodeCurrent>1739704259</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>37</DefaultOrder>
+    <ErrorCode>V202</ErrorCode>
+    <Message>Explicit conversion from memsize type to 32-bit integer type: (int) wParam</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>109</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>2271094</CodePrev>
+    <CodeCurrent>1739704259</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>38</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>109</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>2271094</CodePrev>
+    <CodeCurrent>1739704259</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>39</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>113</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>18198978</CodePrev>
+    <CodeCurrent>4140078047</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>40</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>117</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>4549710</CodePrev>
+    <CodeCurrent>2160873474</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>41</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>121</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>18170306</CodePrev>
+    <CodeCurrent>381981662</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>42</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>125</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>4542542</CodePrev>
+    <CodeCurrent>4174139394</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>43</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>129</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>18201026</CodePrev>
+    <CodeCurrent>3871642591</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>44</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>133</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>4550222</CodePrev>
+    <CodeCurrent>2227982338</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>45</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>141</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>1138538</CodePrev>
+    <CodeCurrent>3335475059</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>46</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>145</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>1134698</CodePrev>
+    <CodeCurrent>3243200371</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>47</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>149</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>284082</CodePrev>
+    <CodeCurrent>869301561</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>48</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>153</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>568440</CodePrev>
+    <CodeCurrent>1975093041</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>49</DefaultOrder>
+    <ErrorCode>V202</ErrorCode>
+    <Message>Explicit conversion from memsize type to 32-bit integer type: (int) wParam</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>153</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>568440</CodePrev>
+    <CodeCurrent>1975093041</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>50</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>153</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>568440</CodePrev>
+    <CodeCurrent>1975093041</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>51</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>157</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>18203984</CodePrev>
+    <CodeCurrent>713324501</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>52</DefaultOrder>
+    <ErrorCode>V101</ErrorCode>
+    <Message>Implicit assignment type conversion to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.cpp</ShortFile>
+    <Line>157</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp</File>
+    <CodePrev>18203984</CodePrev>
+    <CodeCurrent>713324501</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>53</DefaultOrder>
+    <ErrorCode>V001</ErrorCode>
+    <Message>A code fragment from 'c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.cpp' cannot be analyzed.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>procedure.h</ShortFile>
+    <Line>3</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\procedure.h</File>
+    <CodePrev>0</CodePrev>
+    <CodeCurrent>0</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>0</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>54</DefaultOrder>
+    <ErrorCode>V126</ErrorCode>
+    <Message>Be advised that the size of the type 'long' varies between LLP64/LP64 data models.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>glew.h</ShortFile>
+    <Line>280</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\gl\glew.h</File>
+    <CodePrev>3355266758</CodePrev>
+    <CodeCurrent>1912585684</CodeCurrent>
+    <CodeNext>48411311</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>55</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winapp.h</ShortFile>
+    <Line>13</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winapp.h</File>
+    <CodePrev>1895608215</CodePrev>
+    <CodeCurrent>2619638225</CodeCurrent>
+    <CodeNext>1900351</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>56</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winapp.h</ShortFile>
+    <Line>14</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winapp.h</File>
+    <CodePrev>2619638225</CodePrev>
+    <CodeCurrent>1900351</CodeCurrent>
+    <CodeNext>1166811</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>57</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winapp.h</ShortFile>
+    <Line>16</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winapp.h</File>
+    <CodePrev>1166811</CodePrev>
+    <CodeCurrent>252432013</CodeCurrent>
+    <CodeNext>1972209</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>58</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winapp.h</ShortFile>
+    <Line>17</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winapp.h</File>
+    <CodePrev>252432013</CodePrev>
+    <CodeCurrent>1972209</CodeCurrent>
+    <CodeNext>1797901</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>59</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winapp.h</ShortFile>
+    <Line>18</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winapp.h</File>
+    <CodePrev>1972209</CodePrev>
+    <CodeCurrent>1797901</CodeCurrent>
+    <CodeNext>1918651</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>3</Level>
+    <DefaultOrder>60</DefaultOrder>
+    <ErrorCode>V122</ErrorCode>
+    <Message>Memsize type is used in the struct/class.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winapp.h</ShortFile>
+    <Line>19</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winapp.h</File>
+    <CodePrev>1797901</CodePrev>
+    <CodeCurrent>1918651</CodeCurrent>
+    <CodeNext>974865699</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>61</DefaultOrder>
+    <ErrorCode>V106</ErrorCode>
+    <Message>Implicit type conversion third argument 'sz' of function 'wcsncpy' to memsize type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winapp.h</ShortFile>
+    <Line>37</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winapp.h</File>
+    <CodePrev>503404234</CodePrev>
+    <CodeCurrent>4077710253</CodeCurrent>
+    <CodeNext>125</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>62</DefaultOrder>
+    <ErrorCode>V110</ErrorCode>
+    <Message>Implicit type conversion of return value 'msg.wParam' from memsize type to 32-bit type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>81</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>3053</CodePrev>
+    <CodeCurrent>5652773</CodeCurrent>
+    <CodeNext>125</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>63</DefaultOrder>
+    <ErrorCode>V2001</ErrorCode>
+    <Message>Consider using the extended version of the GetDC function here: GetDCEx.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>104</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>2271924239</CodePrev>
+    <CodeCurrent>1514655828</CodeCurrent>
+    <CodeNext>1902837337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>64</DefaultOrder>
+    <ErrorCode>V2001</ErrorCode>
+    <Message>Consider using the extended version of the MessageBox function here: MessageBoxEx.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>115</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>853956488</CodePrev>
+    <CodeCurrent>281743877</CodeCurrent>
+    <CodeNext>29980569</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>65</DefaultOrder>
+    <ErrorCode>V201</ErrorCode>
+    <Message>Explicit conversion from 32-bit integer type to memsize type: (DWORD_PTR)(c)</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>183</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>4439783</CodePrev>
+    <CodeCurrent>6362353</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>66</DefaultOrder>
+    <ErrorCode>V201</ErrorCode>
+    <Message>Explicit conversion from 32-bit integer type to memsize type: (DWORD_PTR)((c) &gt;&gt; 16)</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>183</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>4439783</CodePrev>
+    <CodeCurrent>6362353</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>67</DefaultOrder>
+    <ErrorCode>V201</ErrorCode>
+    <Message>Explicit conversion from 32-bit integer type to memsize type: (DWORD_PTR)(c)</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>186</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>4438727</CodePrev>
+    <CodeCurrent>4284161753</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>68</DefaultOrder>
+    <ErrorCode>V201</ErrorCode>
+    <Message>Explicit conversion from 32-bit integer type to memsize type: (DWORD_PTR)((c) &gt;&gt; 16)</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>186</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>4438727</CodePrev>
+    <CodeCurrent>4284161753</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>69</DefaultOrder>
+    <ErrorCode>V201</ErrorCode>
+    <Message>Explicit conversion from 32-bit integer type to memsize type: (DWORD_PTR)(c)</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>193</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>4436173</CodePrev>
+    <CodeCurrent>1988279755</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>70</DefaultOrder>
+    <ErrorCode>V201</ErrorCode>
+    <Message>Explicit conversion from 32-bit integer type to memsize type: (DWORD_PTR)((c) &gt;&gt; 16)</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>193</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>4436173</CodePrev>
+    <CodeCurrent>1988279755</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>71</DefaultOrder>
+    <ErrorCode>V103</ErrorCode>
+    <Message>Implicit type conversion from memsize to 32-bit type.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>206</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>9050</CodePrev>
+    <CodeCurrent>2421852436</CodeCurrent>
+    <CodeNext>2337</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>72</DefaultOrder>
+    <ErrorCode>V112</ErrorCode>
+    <Message>Dangerous magic number 32 used: ...ColorBits = 32;.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>225</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>3633461534</CodePrev>
+    <CodeCurrent>50005899</CodeCurrent>
+    <CodeNext>50035595</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>73</DefaultOrder>
+    <ErrorCode>V112</ErrorCode>
+    <Message>Dangerous magic number 32 used: ...DepthBits = 32;.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>226</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>50005899</CodePrev>
+    <CodeCurrent>50035595</CodeCurrent>
+    <CodeNext>0</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>74</DefaultOrder>
+    <ErrorCode>V2001</ErrorCode>
+    <Message>Consider using the extended version of the MessageBox function here: MessageBoxEx.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>230</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>2775093563</CodeCurrent>
+    <CodeNext>177357</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>75</DefaultOrder>
+    <ErrorCode>V2001</ErrorCode>
+    <Message>Consider using the extended version of the MessageBox function here: MessageBoxEx.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>236</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>123</CodePrev>
+    <CodeCurrent>888442130</CodeCurrent>
+    <CodeNext>177357</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>76</DefaultOrder>
+    <ErrorCode>V201</ErrorCode>
+    <Message>Explicit conversion from 32-bit integer type to memsize type: (DWORD_PTR)(c)</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>283</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>304032401</CodePrev>
+    <CodeCurrent>3645747084</CodeCurrent>
+    <CodeNext>79930545</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>77</DefaultOrder>
+    <ErrorCode>V201</ErrorCode>
+    <Message>Explicit conversion from 32-bit integer type to memsize type: (DWORD_PTR)((c) &gt;&gt; 16)</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>main.cpp</ShortFile>
+    <Line>283</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\main.cpp</File>
+    <CodePrev>304032401</CodePrev>
+    <CodeCurrent>3645747084</CodeCurrent>
+    <CodeNext>79930545</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>1</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>1</Level>
+    <DefaultOrder>78</DefaultOrder>
+    <ErrorCode>V2001</ErrorCode>
+    <Message>Consider using the extended version of the MessageBox function here: MessageBoxEx.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winapp.cpp</ShortFile>
+    <Line>13</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winapp.cpp</File>
+    <CodePrev>2853916521</CodePrev>
+    <CodeCurrent>949334613</CodeCurrent>
+    <CodeNext>125</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+  <PVS-Studio_Analysis_Log>
+    <FavIcon>false</FavIcon>
+    <Level>2</Level>
+    <DefaultOrder>79</DefaultOrder>
+    <ErrorCode>V2005</ErrorCode>
+    <Message>C-style explicit type casting is utilized. Consider using: static_cast/const_cast/reinterpret_cast.</Message>
+    <Project>ICG-GL-Lab2</Project>
+    <ShortFile>winapp.cpp</ShortFile>
+    <Line>41</Line>
+    <FalseAlarm>false</FalseAlarm>
+    <File>c:\users\даниил\icg-gl-lab2\icg-gl-lab2\winapp.cpp</File>
+    <CodePrev>3851482450</CodePrev>
+    <CodeCurrent>1924184427</CodeCurrent>
+    <CodeNext>6730119</CodeNext>
+    <TrialMessage>false</TrialMessage>
+    <Analyzer>6</Analyzer>
+    <LineExtension />
+  </PVS-Studio_Analysis_Log>
+</NewDataSet>

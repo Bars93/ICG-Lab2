@@ -1,8 +1,5 @@
 
 #include "glModel.h"
-#pragma comment(lib,"opengl32.lib")
-#pragma comment(lib,"glu32.lib")
-#pragma comment(lib,"glew32s.lib")
 
 glModel::~glModel(void)
 {
@@ -10,8 +7,14 @@ glModel::~glModel(void)
 ///////////////////////////////////////////////////////////////////////////////
 // default ctor
 ///////////////////////////////////////////////////////////////////////////////
-glModel::glModel() : mouseLeftDown(false), mouseRightDown(false),
-	cameraAngleX(0), cameraAngleY(0), cameraDistance(5)
+glModel::glModel() : 
+	mouseLeftDown(false), 
+	mouseRightDown(false),
+	cameraAngleX(0), 
+	cameraAngleY(0), 
+	cameraDistance(5),
+	GLSL(NULL),
+	useShadersflg(false)
 {
 }
 
@@ -28,14 +31,13 @@ glModel::glModel() : mouseLeftDown(false), mouseRightDown(false),
 void glModel::init()
 {
 
-
+	GLSL = new glShader(handle);
+	if(GLSL->loadAndAttach("shaders\\ICG-Lab2.vert","shaders\\ICG-Lab2.frag"))
+		useShadersflg = true;
 	// track material ambient and diffuse from surface color, call it before glEnable(GL_COLOR_MATERIAL)
 	glClearColor(0,0,0, 1);
 	// 0 is near, 1 is far
 	glEnable(GL_COLOR_LOGIC_OP);
-	glGenVertexArrays(1,&vaID);
-	glBindVertexArray(vaID);
-	glGenBuffers(1,&voID);
 }
 
 
@@ -77,33 +79,21 @@ void glModel::setViewport(int w, int h)
 void glModel::draw()
 {
 	// clear buffer
-	static const GLfloat g_vertex_buffer_data[] = {
-		-1.0f, -1.0f,
-		1.0f, -1.0f,
-		0.0f,  1.0f
-	};
-	// This will identify our vertex buffer
-	glBindBuffer(GL_ARRAY_BUFFER, voID);
-
-	// Give our vertices to OpenGL.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-	// 1rst attribute buffer : vertices
-
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(
-		0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		0,                  // stride
-		(void*)0            // array buffer offset
-		);
-
-	// Draw the triangle !
-	glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle
-
-	glDisableVertexAttribArray(0);
-	// save the initial ModelView matrix before modifying ModelView matrix
+	glClearColor(255,255,255,1);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glPushMatrix();
+	if(useShadersflg)
+		GLSL->useProgram();
+	glBegin(GL_POLYGON);
+	if(!useShadersflg)
+		glColor3ub(250,100,10);
+	glVertex2i(100,150);
+	glVertex2i(250,400);
+	glVertex2i(0,200);
+	glEnd();
+	if(useShadersflg)
+		glUseProgram(NULL);
+	glPopMatrix();
 }
 
 

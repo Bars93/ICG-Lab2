@@ -1,7 +1,4 @@
-#include "GL/glew.h"
-#include "GL/wglew.h"
 #include "glView.h"
-#pragma comment(lib,"glew32s.lib")
 
 glView::glView(void):
 	hdc(0), hglrc(0)
@@ -31,7 +28,7 @@ void glView::closeContext(HWND handle)
 ///////////////////////////////////////////////////////////////////////////////
 // create OpenGL rendering context
 ///////////////////////////////////////////////////////////////////////////////
-bool glView::createContext(HWND handle, int colorBits, int depthBits, int stencilBits)
+bool glView::createContext(HWND handle, int colorBits, int depthBits, int stencilBits, DWORD oglVersion)
 {
 	// retrieve a handle to a display device context
 	hdc = GetDC(handle);
@@ -39,51 +36,65 @@ bool glView::createContext(HWND handle, int colorBits, int depthBits, int stenci
 	// set pixel format
 	if(!setPixelFormat(hdc, colorBits, depthBits, stencilBits))
 	{
-		MessageBox(0, L"Cannot set a suitable pixel format.", L"Error", MB_ICONEXCLAMATION | MB_OK);
+		MessageBox(0, L"Cannot set a suitable pixel format.", L"GL View Class", MB_ICONEXCLAMATION | MB_OK);
 		ReleaseDC(handle, hdc);                     // remove device context
 		return false;
 	}
 
 	// create a new OpenGL rendering context
-	hglrc = wglCreateContext(hdc);
-	wglMakeCurrent(hdc, hglrc);
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		MessageBox(handle,L"GLEW is not initialized!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
-		return false;
-	}
-	int attribs[] =
-	{
-		WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
-		WGL_CONTEXT_MINOR_VERSION_ARB, 3,
-		WGL_CONTEXT_FLAGS_ARB, 0,
-		0
-	};
-	if(wglewIsSupported("WGL_ARB_create_context") == 1)
-	{
-		m_hrc = wglCreateContextAttribsARB(hdc,0, attribs);
-		wglMakeCurrent(NULL,NULL);
-		wglDeleteContext(hglrc);
-		wglMakeCurrent(hdc, m_hrc);
-	}
-	else
-	{       //It's not possible to make a GL 3.x context. Use the old style context (GL 2.1 and before)
+	if(oglVersion >= OGL_V11 && oglVersion <= OGL_V21) {
+		hglrc = wglCreateContext(hdc);
+		wglMakeCurrent(hdc, hglrc); // Create OpenGL 2.1 (GLSL 1.30) or earlier context
 		m_hrc = hglrc;
 	}
+	else if(oglVersion >= OGL_V30 && oglVersion <= OGL_V44) {
+		/* Create OpenGL 3.0+ (GLSL 1.50+) context, using GLEW, future realise */
+		hglrc = wglCreateContext(hdc);
+		wglMakeCurrent(hdc, hglrc); // Create OpenGL 2.1 (GLSL 1.30) or earlier context
+		GLenum err = glewInit();
+		if (GLEW_OK != err)
+		{
+			MessageBox(handle,L"GLEW is not initialized!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		int attribs[] =
+		{
+			WGL_CONTEXT_MAJOR_VERSION_ARB, LOWORD(oglVersion),
+			WGL_CONTEXT_MINOR_VERSION_ARB, HIWORD(oglVersion),
+			WGL_CONTEXT_FLAGS_ARB, 0,
+			0
+		};
+		if(wglewIsSupported("WGL_ARB_create_context") == 1)
+		{
+			m_hrc = wglCreateContextAttribsARB(hdc,0, attribs);
+			wglMakeCurrent(NULL,NULL);
+			wglDeleteContext(hglrc);
+			wglMakeCurrent(hdc, m_hrc);
+		}
+		else
+		{       //It's not possible to make a GL 3.x context. Use the old style context (GL 2.1 and before)
+			m_hrc = hglrc;
+		}
 
-	//Checking GL version
-	const GLubyte *GLVersionString = glGetString(GL_VERSION);
+		//Checking GL version
+		const GLubyte *GLVersionString = glGetString(GL_VERSION);
 
-	//Or better yet, use the GL3 way to get the version number
-	int OpenGLVersion[2];
-	glGetIntegerv(GL_MAJOR_VERSION, &OpenGLVersion[0]);
-	glGetIntegerv(GL_MINOR_VERSION, &OpenGLVersion[1]);
-	WCHAR str[20];
-	const GLubyte *glextstr = glGetString(GL_EXTENSIONS);
-	wsprintf(str,L"OpenGL %d.%d",OpenGLVersion[0],OpenGLVersion[1]);
-	MessageBox(handle,str,L"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);
-	MessageBoxA(handle,(char*)glextstr,"ICG GL Lab2",MB_OK | MB_ICONINFORMATION);
+		//Or better yet, use the GL3 way to get the version number
+		int OpenGLVersion[2];
+		glGetIntegerv(GL_MAJOR_VERSION, &OpenGLVersion[0]);
+		glGetIntegerv(GL_MINOR_VERSION, &OpenGLVersion[1]);
+		WCHAR str[20];
+		const GLubyte *glextstr = glGetString(GL_EXTENSIONS);
+		wsprintf(str,L"OpenGL %d.%d",OpenGLVersion[0],OpenGLVersion[1]);
+#if defined(IRBIS_GLFW_DBG_MODE)
+		MessageBox(handle,str,L"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);
+		MessageBoxA(handle,(char*)glextstr,"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);
+#endif
+
+	}
+	else {
+		MessageBox(handle,L"No currently availible OpenGL version",L"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);
+	}
 	if (!m_hrc) return false;
 	return true;
 }
@@ -194,5 +205,5 @@ int glView::findPixelFormat(HDC hdc, int colorBits, int depthBits, int stencilBi
 ///////////////////////////////////////////////////////////////////////////////
 void glView::swapBuffers()
 {
-	::SwapBuffers(hdc);
+	SwapBuffers(hdc);
 }

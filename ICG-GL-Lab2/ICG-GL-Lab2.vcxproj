@@ -52,11 +52,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalOptions>/D "IRBIS_GLFW_DBG_MODE" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>del /f /s /q *.pdb *.idb</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -83,19 +87,19 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WinProc.cpp" />
     <ClCompile Include="WinApp.cpp" />
-    <ClCompile Include="WinCtrl.cpp" />
+    <ClCompile Include="WinCtrl.cpp">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glCtrl.h" />
+    <ClInclude Include="glHeaders.h" />
     <ClInclude Include="glModel.h" />
     <ClInclude Include="glShader.h" />
     <ClInclude Include="glView.h" />
     <ClInclude Include="WinProc.h" />
     <ClInclude Include="WinApp.h" />
     <ClInclude Include="WinCtrl.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

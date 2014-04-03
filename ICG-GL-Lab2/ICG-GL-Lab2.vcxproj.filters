@@ -33,10 +33,10 @@
     <ClCompile Include="glModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="glShader.cpp">
+    <ClCompile Include="WinProc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WinProc.cpp">
+    <ClCompile Include="glShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,8 +62,8 @@
     <ClInclude Include="WinProc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
+    <ClInclude Include="glHeaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

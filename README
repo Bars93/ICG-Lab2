@@ -1,0 +1,35 @@
+Project for studying OpenGL
+Program split on classes(modules).
+Project is oriented on Windows x86 still now (project MSVC 2012)
+When project ends, I try to write multi-platform compatible code
+
+>Requires (multi-platform)
+* Latest hardware drivers for your system, to support latest OpenGL calls
+* OpenGL, GLU libraries (view google to append it to your project depends on your system)
+	in short for Windows (MSVC)
+		#include <GL/gl.h>
+		#include <GL/GLU.h>
+		#pragma comment(lib,"opengl32.lib")
+		#pragma comment(lib,"glu32.lib")
+	in Linux same headers and using compiler (GCC) options -lGL -lGLU
+* GLEW http://glew.sourceforge.net/ or sudo apt-get install glew glxew
+	includes latest OpenGL version core API calls and some platform oriented functions instead of header (windows - wglew.h, linux - glxew)
+* OpenGL extensions (ARB) and Windows/Linux(X11) (WGL/GLX) oriented GL extensions
+	http://www.opengl.org/registry/
+* maybe in future project will try using shader's or  will use GLM http://glm.g-truc.net/
+
+Modules description
+* main.cpp - main module - program entry point for Win32 WinMain, call another function, object of classes
+* WinProc.cpp/h - Window Procudure for control Windows Application
+* WinApp.cpp/h - Window Creation module (register, show, append procedure function, data)
+* WinCtrl.cpp/h - Base class for deriving - controller template
+* glView.cpp/h - creation of openGL context, init extensions, etc 
+* glModel.cpp/h - core of OpenGL application, visual construction, data manipulate, call shaders, rendering
+* glCtrl.cpp/h - OpenGL derived class, implements glView and glModel, control calls by Windows procedure
+* glShader.cpp/h - GLSL vertex/fragment shader loader, compiler, linker and initializator
+* glHeaders.h - add all OpenGL headers with one
+
+Big TODO's:
+* turning on shaders compiling (searching right way)
+* split to two threads rendering and drawing
+* write logic of application (ICG Lab-2)

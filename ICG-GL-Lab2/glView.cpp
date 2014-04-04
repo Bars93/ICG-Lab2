@@ -40,12 +40,39 @@ bool glView::createContext(HWND handle, int colorBits, int depthBits, int stenci
 		ReleaseDC(handle, hdc);                     // remove device context
 		return false;
 	}
-
+	static const GLint PFattribs[] = {
+			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
+			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
+			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
+			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
+			WGL_COLOR_BITS_ARB, 32,
+			WGL_DEPTH_BITS_ARB, 24
+		};
 	// create a new OpenGL rendering context
 	if(oglVersion >= OGL_V11 && oglVersion <= OGL_V21) {
 		hglrc = wglCreateContext(hdc);
 		wglMakeCurrent(hdc, hglrc); // Create OpenGL 2.1 (GLSL 1.30) or earlier context
 		m_hrc = hglrc;
+		if (GLEW_OK != glewInit())
+		{
+			MessageBox(handle,L"GLEW is not initialized!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		if(!GLEW_VERSION_2_1)
+		{
+			MessageBox(handle,L"OpenGL 2.1 not supported!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		
+		if(WGLEW_ARB_pixel_format) {
+			UINT NumFormats = 0;
+			INT WGLEW_PF = 0;
+			if(wglChoosePixelFormatARB
+				(hdc, PFattribs, NULL, 1, &WGLEW_PF, &NumFormats) != TRUE 
+				|| NumFormats < 0) {
+				MessageBox(handle,L"Error choose Pixel Format ARB",L"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);
+			}
+		}
 	}
 	else if(oglVersion >= OGL_V30 && oglVersion <= OGL_V44) {
 		/* Create OpenGL 3.0+ (GLSL 1.50+) context, using GLEW, future realise */
@@ -57,7 +84,7 @@ bool glView::createContext(HWND handle, int colorBits, int depthBits, int stenci
 			MessageBox(handle,L"GLEW is not initialized!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
 			return false;
 		}
-		int attribs[] =
+		static const GLint attribs[] =
 		{
 			WGL_CONTEXT_MAJOR_VERSION_ARB, LOWORD(oglVersion),
 			WGL_CONTEXT_MINOR_VERSION_ARB, HIWORD(oglVersion),
@@ -75,18 +102,27 @@ bool glView::createContext(HWND handle, int colorBits, int depthBits, int stenci
 		{       //It's not possible to make a GL 3.x context. Use the old style context (GL 2.1 and before)
 			m_hrc = hglrc;
 		}
-
+		if(WGLEW_ARB_pixel_format) {
+			UINT NumFormats = 0;
+			INT WGLEW_PF = 0;
+			if(wglChoosePixelFormatARB
+				(hdc, PFattribs, NULL, 1, &WGLEW_PF, &NumFormats) != TRUE 
+				|| NumFormats < 0) {
+				MessageBox(handle,L"Error choose Pixel Format ARB",L"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);
+			}
+		}
 		//Checking GL version
 		const GLubyte *GLVersionString = glGetString(GL_VERSION);
 
 		//Or better yet, use the GL3 way to get the version number
+#if defined(IRBIS_GLFW_DBG_MODE)
 		int OpenGLVersion[2];
 		glGetIntegerv(GL_MAJOR_VERSION, &OpenGLVersion[0]);
 		glGetIntegerv(GL_MINOR_VERSION, &OpenGLVersion[1]);
 		WCHAR str[20];
 		const GLubyte *glextstr = glGetString(GL_EXTENSIONS);
 		wsprintf(str,L"OpenGL %d.%d",OpenGLVersion[0],OpenGLVersion[1]);
-#if defined(IRBIS_GLFW_DBG_MODE)
+
 		MessageBox(handle,str,L"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);
 		MessageBoxA(handle,(char*)glextstr,"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);
 #endif
@@ -115,9 +151,9 @@ bool glView::setPixelFormat(HDC hdc, int colorBits, int depthBits, int stencilBi
 	ppfd->dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER; 
 	ppfd->dwLayerMask = PFD_MAIN_PLANE; 
 	ppfd->iPixelType = PFD_TYPE_RGBA; 
-	ppfd->cColorBits = 32; 
-	ppfd->cDepthBits = 32; 
-
+	ppfd->cColorBits = colorBits; 
+	ppfd->cDepthBits = depthBits; 
+	ppfd->cStencilBits = stencilBits;
 	// find out the best matched pixel format
 	/* int pixelFormat = findPixelFormat(hdc, colorBits, depthBits, stencilBits);
 	if(pixelFormat == 0)

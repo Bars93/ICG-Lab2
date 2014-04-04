@@ -14,8 +14,16 @@ class glModel
 	float cameraAngleX, cameraAngleY, cameraDistance;
 	BOOL useShadersflg;
 	glShader *GLSL;
+	GLuint program;
+	GLuint vbID, vcID; // buffers ID
+	GLuint texColorBuf; // color buffer
+	GLuint vertexCount;
+	GLint colAttrib,attrLoc;
+	GLfloat *vertBuf;
+	GLubyte *colBuf;
 public:
-	void init();                                    // initialize OpenGL states
+	void init();    // initialize OpenGL states
+	void initBuffers();
 	//void setCamera(float posX, float posY, float posZ, float targetX, float targetY, float targetZ);
 	void setViewport(int width, int height);
 	void draw();

@@ -1,6 +1,7 @@
-varying vec3 vecColor;
+#version 120                   
+varying vec3 curColor;
 void main()
 {
-	const vec3 defColor = vec3(0.125,0.825,0.565);
- 	gl_FragColor = vec4(vecColor+defColor,1.0);
+	const vec3 defColor = vec3(60.125,20.825,240.565);
+ 	gl_FragColor = gl_Color;
 }

@@ -50,8 +50,12 @@ int glCtrl::create()
 }
 int glCtrl::paint()
 {
+	PAINTSTRUCT ps;
+
+	HDC hDC = BeginPaint(handle, &ps);
 	modelGL->draw();
 	viewGL->swapBuffers();
+	EndPaint(handle,&ps);
 	return 0;
 }
 int glCtrl::command(int id, int cmd, LPARAM msg)

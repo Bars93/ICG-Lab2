@@ -38,15 +38,11 @@ ATOM WINAPI WinApp::RegWindow() {
 		// set window class parameters
 		WCE.cbSize = sizeof(WNDCLASSEX);
 		WCE.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW; 
-		WCE.lpfnWndProc   = (WNDPROC)mainWndProc; 
-		WCE.cbClsExtra    = 0; 
-		WCE.cbWndExtra    = 0; 
+		WCE.lpfnWndProc   = mainWndProc; 
 		WCE.hInstance     = hInst; 
 		WCE.hIcon         = LoadIcon (hInst, IDI_APPLICATION); 
 		WCE.hIconSm       = LoadIcon (hInst, IDI_APPLICATION);
 		WCE.hCursor       = LoadCursor (NULL,IDC_ARROW); 
-		WCE.hbrBackground = (HBRUSH)(COLOR_WINDOW+1); 
-		WCE.lpszMenuName  = 0;
 		WCE.lpszClassName = szWinClassName;
 		globRes = RegisterClassEx(&WCE);
 		if(!globRes) {

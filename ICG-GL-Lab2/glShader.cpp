@@ -1,18 +1,15 @@
 #pragma warning(disable : 4996)
 #include "glShader.h"
-#include <fstream>
-#include <iterator>
 #include <stdio.h>
-#include <string>
-#define sizeArray(x) sizeof(x)/sizeof(x[0])
-using std::string;
+#include <string.h>
 void glShader::infoMessage(LPCWSTR text) {
 	MessageBox(handle,text,INFO_MSG_TITLE, MB_OK | MB_ICONEXCLAMATION);
 }
 void glShader::printProgramLog( GLuint program )
 {
 	//Make sure name is shader
-	LPWSTR infoLogUnicode;
+	static WCHAR infoLogUnicode[512];
+	static CHAR infoLog[512];
 	if( glIsProgram( program ) )
 	{
 		//Program log length
@@ -23,14 +20,12 @@ void glShader::printProgramLog( GLuint program )
 		glGetProgramiv( program, GL_INFO_LOG_LENGTH, &maxLength );
 
 		//Allocate string
-		LPSTR infoLog = new CHAR[ maxLength ];
 		LPCSTR ilptr = infoLog;
 
 		//Get info log
 		glGetProgramInfoLog( program, maxLength, &infoLogLength, infoLog );
 		if( infoLogLength > 0 )
 		{
-			infoLogUnicode = new WCHAR[ maxLength ];
 			//Print Log
 			mbstowcs(infoLogUnicode,ilptr,maxLength);
 			infoMessage(infoLogUnicode);
@@ -39,17 +34,17 @@ void glShader::printProgramLog( GLuint program )
 	}
 	else
 	{
-		infoLogUnicode = new WCHAR[256];
 		wsprintf(infoLogUnicode,L"Object %u is not program",program);
 		infoMessage(infoLogUnicode);
 
 	}
-	delete[] infoLogUnicode;
 }
 void glShader::printShaderLog( GLuint shader )
 {
 	//Make sure name is shader
-	LPWSTR infoLogUnicode;
+	
+	static WCHAR infoLogUnicode[512];
+	static CHAR infoLog[512];
 	if( glIsShader( shader ) )
 	{
 		//Shader log length
@@ -58,16 +53,12 @@ void glShader::printShaderLog( GLuint shader )
 
 		//Get info string length
 		glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &maxLength );
-
-		//Allocate string
-		LPSTR infoLog = new CHAR[ maxLength ];
 		LPCSTR ilptr = infoLog;
 
 		//Get info log
 		glGetShaderInfoLog( shader, maxLength, &infoLogLength, infoLog );
 		if( infoLogLength > 0 )
 		{
-			infoLogUnicode = new WCHAR[ maxLength ];
 			//Print Log
 			wsprintf(infoLogUnicode,L"%S",infoLog);
 			infoMessage(infoLogUnicode);
@@ -90,21 +81,15 @@ void glShader::printShaderLog( GLuint shader )
 		if( infoLogLength > 0 )
 		{
 			if(maxLength > 0) {
-				infoLogUnicode = new WCHAR[ maxLength ];
 				//Print Log
 				wsprintf(infoLogUnicode,L"%S",infoLog);
 				infoMessage(infoLogUnicode);
 			}
-			else {
-				infoLogUnicode = NULL;	
-			}
+
 		}
-		if(!infoLogUnicode) 
-			infoLogUnicode = new WCHAR[256];
 		wsprintf(infoLogUnicode,L"Object %u is not shader",shader);
 		infoMessage(infoLogUnicode);
 	}
-	delete[] infoLogUnicode;
 }
 glShader::glShader(HWND _handle):
 	handle(_handle),
@@ -143,39 +128,64 @@ GLuint glShader::LoadShader(LPCSTR path, UINT32 type) {
 	using namespace std;
 	GLuint shaderID;
 	if(programID != NULL) {
-		string shaderContent; // file content of shader;
-		shaderID = 0; // setting defaults
-		ifstream shaderFS(path, ios::in); // open input file stream
-		if(shaderFS.is_open()) {
-			// read until met EOF
-			shaderContent.assign(istreambuf_iterator<char>(shaderFS),istreambuf_iterator<char>());
-			shaderFS.close();
-			glCreateShaderObjectARB(type);
-			const GLchar* shaderSource = shaderContent.c_str();
-			GLuint len = shaderContent.length();
+		shaderID = glCreateShader(type);
+		const GLchar* shaderSource = loadFromFile(path);
+		GLint len = strlen(shaderSource);
 
-			glShaderSourceARB( shaderID, 1, (const GLchar**)&shaderSource,NULL);
-			//Compile shader source 
-			glCompileShaderARB( shaderID ); //Check shader for errors 
-			GLint shaderCompiled = GL_FALSE; 
-			glGetShaderiv( shaderID, GL_COMPILE_STATUS, &shaderCompiled ); 
-			if( shaderCompiled != GL_TRUE ) { 
-				wsprintf(str,L"Unable to compile shader %d!\n\nSource:\n%S\n", shaderID, shaderSource ); 
-				infoMessage(str);
-				printShaderLog( shaderID ); 
-				glDeleteShader( shaderID ); 
-				shaderID = NULL; 
-			} 
-		}
-		else { 
-			wsprintf(str,L"Unable to open file %S\n", path); 
+		glShaderSource( shaderID, 1, (const GLchar**)&shaderSource,&len);
+		//Compile shader source 
+		glCompileShader( shaderID ); //Check shader for errors 
+
+		GLint shaderCompiled = GL_FALSE; 
+		PFNGLGETSHADERIVPROC glGetShaderivOwn = (PFNGLGETSHADERIVPROC) wglGetProcAddress("glGetShaderiv");
+		glGetShaderivOwn( shaderID, GL_COMPILE_STATUS, &shaderCompiled ); 
+		if( shaderCompiled != GL_TRUE ) { 
+			wsprintf(str,L"Unable to compile shader %d!\n\nSource:\n%S\n", shaderID, shaderSource ); 
 			infoMessage(str);
+			printShaderLog( shaderID ); 
+			glDeleteShader( shaderID ); 
+			shaderID = NULL; 
 		} 
+		delete[] shaderSource;
+
 	}
 	else {
 		shaderID = NULL;
 	}
 	return shaderID;
+}
+char* glShader::loadFromFile(LPCSTR path) {
+	const size_t blockSize = 512;
+	FILE *fp;
+	char buf[blockSize];
+	char *source = NULL;
+	size_t tmp, sourceLength = 0;
+
+	/* open file */
+	fp = fopen(path, "r");
+	if(!fp) {
+		return NULL;
+	}
+
+	/* read the entire file into a string */
+	while((tmp = fread(buf, 1, blockSize, fp)) > 0) {
+		char *newSource = new char[sourceLength + tmp + 1];
+
+		if(source) {
+			memcpy(newSource, source, sourceLength);
+			delete[] source;
+		}
+		memcpy(newSource + sourceLength, buf, tmp);
+
+		source = newSource;
+		sourceLength += tmp;
+	}
+
+	/* close the file and null terminate the string */
+	fclose(fp);
+	if(source)
+		source[sourceLength] = '\0';
+	return source;
 }
 GLboolean glShader::useProgram() {
 	//Use shader
@@ -191,7 +201,7 @@ GLboolean glShader::useProgram() {
 	}
 	return true;
 }
-bool glShader::loadAndAttach(LPCSTR path_vert, LPCSTR path_frag) {
+GLuint glShader::loadAndAttach(LPCSTR path_vert, LPCSTR path_frag) {
 	if(programID == NULL)
 		programID = glCreateProgramObjectARB(); // create GLSL program
 	shader_vertexID = LoadShader(path_vert,GLSL_VERTEX);
@@ -199,7 +209,7 @@ bool glShader::loadAndAttach(LPCSTR path_vert, LPCSTR path_frag) {
 		shader_fragmentID = LoadShader(path_frag,GLSL_FRAGMENT);
 		if(attachShader(shader_fragmentID)) {
 			//Check for errors
-			glLinkProgramARB(programID);
+			glLinkProgram(programID);
 			GLint programSuccess = GL_TRUE;
 			glGetProgramiv( programID, GL_LINK_STATUS, &programSuccess );
 			if( programSuccess != GL_TRUE )
@@ -208,12 +218,12 @@ bool glShader::loadAndAttach(LPCSTR path_vert, LPCSTR path_frag) {
 				printProgramLog( programID );
 				glDeleteProgram( programID );
 				programID = NULL;
-				return false;
+				return -1;
 			}
-			return true;
+			return programID;
 		}
 	}
-	return false;
+	return -1;
 }
 glShader::~glShader(void)
 {

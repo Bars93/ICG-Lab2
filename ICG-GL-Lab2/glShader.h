@@ -16,12 +16,13 @@ class glShader
 	void printShaderLog(GLuint shader);
 	void infoMessage(LPCWSTR text);
 	GLuint LoadShader(LPCSTR path, UINT32 type);
+	char *loadFromFile(LPCSTR path);
 	bool attachShader(GLuint shID);
 public:
-	bool loadAndAttach(LPCSTR path_vert, LPCSTR path_frag);
+	GLuint loadAndAttach(LPCSTR path_vert, LPCSTR path_frag);
 	inline void createProgram() { programID = glCreateProgram(); }
 	GLboolean useProgram();
-	
+		
 	glShader(HWND _handle);
 	glShader(LPCSTR path_vert, LPCSTR path_frag, HWND _handle);
 	~glShader(void);

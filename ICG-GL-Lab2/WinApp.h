@@ -31,6 +31,7 @@ public:
 	void get_AppName(LPWSTR out, int sz) {
 		wcsncpy(out,szWinClassName,sz);
 	}
+	HWND getHandle() { return handle; }
 };
 
 #endif

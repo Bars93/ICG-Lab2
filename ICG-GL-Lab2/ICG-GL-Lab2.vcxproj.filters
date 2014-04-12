@@ -39,6 +39,9 @@
     <ClCompile Include="glShader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="clComputing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApp.h">
@@ -65,5 +68,29 @@
     <ClInclude Include="glHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="clComputing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\ICG-Lab2.frag">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="shaders\ICG-Lab2.vert">
+      <Filter>Source Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="opengl.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ICG-GL-Lab2.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

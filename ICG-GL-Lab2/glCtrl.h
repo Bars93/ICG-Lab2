@@ -5,15 +5,15 @@
 #include "glModel.h"
 class glCtrl : public WinCtrl
 {
-	static void threadFunction(void* arg);      // static thread function, it will route to member function, runThread()
-	void runThread();                           // thread for OpenGL rendering
+	//static void threadFunction(void* arg);      // static thread function, it will route to member function, runThread()
+	//void runThread();                           // thread for OpenGL rendering
 
 	glModel* modelGL;                           
 	glView* viewGL;                             
 	HANDLE threadHandle;
 	unsigned int threadId;
-	volatile bool loopFlag;                     // rendering loop flag
-	bool resizeFlag;
+//	volatile bool loopFlag;                     // rendering loop flag
+	//bool resizeFlag;
 	int clientWidth;                            // width of client area
 	int clientHeight;                           // height of client area
 public:
@@ -30,6 +30,7 @@ public:
 	int rButtonDown(WPARAM state, int x, int y);
 	int rButtonUp(WPARAM state, int x, int y);
 	int mouseMove(WPARAM state, int x, int y);
+	int mouseWheel(int state, int d, int x, int y);
 	int keyDown(int key, LPARAM lParam);
 	int size(int width, int height, WPARAM type);
 };

@@ -1,6 +1,7 @@
 #pragma warning(disable : 4996)
 #include "WinApp.h"
 #include "WinProc.h"
+#include "resource.h"
 HICON WinApp::loadIcon(int id)
 {
 	return (HICON)::LoadImage(hInst, MAKEINTRESOURCE(id), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
@@ -28,26 +29,20 @@ WinApp::WinApp(int _w, int _h,WinCtrl *ctrl,LPCWSTR szAppTitle,LPCWSTR szClassNa
 }
 ATOM WINAPI WinApp::RegWindow() {
 	ATOM globRes;
-	if(WndFunc == NULL) {
-		ErrorMessage(L"Window Control function could not be called!");
-		globRes = -1;
-	}
-	else {
-		WNDCLASSEX   WCE; 
-		ZeroMemory(&WCE,sizeof(WCE));
-		// set window class parameters
-		WCE.cbSize = sizeof(WNDCLASSEX);
-		WCE.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW; 
-		WCE.lpfnWndProc   = mainWndProc; 
-		WCE.hInstance     = hInst; 
-		WCE.hIcon         = LoadIcon (hInst, IDI_APPLICATION); 
-		WCE.hIconSm       = LoadIcon (hInst, IDI_APPLICATION);
-		WCE.hCursor       = LoadCursor (NULL,IDC_ARROW); 
-		WCE.lpszClassName = szWinClassName;
-		globRes = RegisterClassEx(&WCE);
-		if(!globRes) {
-			ErrorMessage(L"Error register window class!");
-		}
+	WNDCLASSEX   WCE; 
+	ZeroMemory(&WCE,sizeof(WCE));
+	// set window class parameters
+	WCE.cbSize = sizeof(WNDCLASSEX);
+	WCE.style         = CS_OWNDC | CS_HREDRAW | CS_VREDRAW; 
+	WCE.lpfnWndProc   = (WNDPROC) mainWndProc; 
+	WCE.hInstance     = hInst; 
+	WCE.hIcon         = loadIcon(IDI_OPENGL_ICON);
+	WCE.hIconSm       = loadIcon(IDI_OPENGL_ICON);
+	WCE.hCursor       = LoadCursor (NULL,IDC_ARROW); 
+	WCE.lpszClassName = szWinClassName;
+	globRes = RegisterClassEx(&WCE);
+	if(!globRes) {
+		ErrorMessage(L"Error register window class!");
 	}
 	return globRes;
 }

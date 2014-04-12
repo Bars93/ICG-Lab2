@@ -16,7 +16,6 @@ class WinApp
 	bool fullscreen;
 	LPCWSTR szWinClassName;
 	LPCWSTR szTitle;
-	WNDPROC WndFunc;
 	WinCtrl *lpCtrl;
 	void ErrorMessage(LPCWSTR text);
 	ATOM WINAPI RegWindow();
@@ -25,7 +24,7 @@ class WinApp
 public:
 	WinApp(int _w, int _h,WinCtrl *ctrl,LPCWSTR szAppTitle, LPCWSTR szClassName,bool fs, HWND hParent,HINSTANCE _hInst);
 	~WinApp(void);
-	bool createWindow(DWORD dwStyle, DWORD dwExStyle);
+	bool createWindow(DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, DWORD dwExStyle = WS_EX_APPWINDOW);
 	void showWindow(int cmdShow);
 	/*get functions */
 	void get_AppName(LPWSTR out, int sz) {

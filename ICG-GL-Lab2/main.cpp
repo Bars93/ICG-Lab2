@@ -11,22 +11,12 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	glCtrl glctrl(&view,&model);
 	WinApp glWin(800,600,&glctrl,L"ICG GL Lab2", L"ICG-GL-Lab2",false,0,hInstance);
 	glWin.createWindow(WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,WS_EX_APPWINDOW);
-	glWin.showWindow(SW_SHOWDEFAULT);
+	glWin.showWindow(SW_SHOWNORMAL);
 	MSG msg;
-	HWND curWND = glWin.getHandle();
-	while(TRUE) {
-		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE) == TRUE) // verify messages in order
-		{ 
-			if (GetMessage(&msg, NULL, 0, 0) ) 
-			{ 
-				TranslateMessage(&msg); 
-				DispatchMessage(&msg); 
-			} else { 
-				return msg.wParam; 
-			} 
-		} 
-		Sleep(100);
-		SendMessage(curWND,WM_PAINT,NULL,NULL);
-	}
-	return 0;  
+	while(GetMessage(&msg, NULL, 0, 0) != NULL ) 
+	{ 
+		TranslateMessage(&msg); 
+		DispatchMessage(&msg); 
+	} 
+	return msg.wParam;  
 } 

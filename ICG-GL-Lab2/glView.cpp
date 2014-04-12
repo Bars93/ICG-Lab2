@@ -46,7 +46,8 @@ bool glView::createContext(HWND handle, int colorBits, int depthBits, int stenci
 			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
 			WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
 			WGL_COLOR_BITS_ARB, 32,
-			WGL_DEPTH_BITS_ARB, 24
+			WGL_DEPTH_BITS_ARB, 24,
+			0
 		};
 	// create a new OpenGL rendering context
 	if(oglVersion >= OGL_V11 && oglVersion <= OGL_V21) {

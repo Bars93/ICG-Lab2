@@ -2,14 +2,12 @@
 
 glCtrl::glCtrl(glView* view,glModel* model) : modelGL(model), viewGL(view),
 	threadHandle(0), threadId(0),
-	loopFlag(false), resizeFlag(false),
 	clientWidth(0), clientHeight(0)
 {
 }
 int glCtrl::close()
 {
-	loopFlag = false;
-	::WaitForSingleObject(threadHandle, INFINITE);  // wait for rendering thread is terminated
+	//::WaitForSingleObject(threadHandle, INFINITE);  // wait for rendering thread is terminated
 
 	// close OpenGL Rendering context
 	viewGL->closeContext(handle);
@@ -20,6 +18,10 @@ int glCtrl::close()
 int glCtrl::destroy()
 {
 	::PostQuitMessage(0);       // exit the message loop
+	return 0;
+}
+int glCtrl::mouseWheel(int state, int d, int x, int y) {
+	modelGL->zoomCamera(d);
 	return 0;
 }
 int glCtrl::create()
@@ -44,8 +46,23 @@ int glCtrl::create()
 	//{
 	//	//Win::log(L"[ERROR] Failed to create rendering thread from glCtrl::create().");
 	//}
-	loopFlag = true;
-	runThread();
+	//loopFlag = true;
+	//runThread();
+
+	// initialize OpenGL states
+	if(!modelGL->init()) {
+		return -1;
+	}
+
+	// configure projection matrix and camera
+	RECT rect;
+	::GetClientRect(handle, &rect);
+	modelGL->setViewport(rect.right, rect.bottom);
+	// rendering loop
+
+	modelGL->draw();
+	viewGL->swapBuffers();
+	InvalidateRect(handle,NULL,FALSE);
 	return 0;
 }
 int glCtrl::paint()
@@ -53,6 +70,18 @@ int glCtrl::paint()
 	PAINTSTRUCT ps;
 
 	HDC hDC = BeginPaint(handle, &ps);
+	ValidateRect(handle,FALSE);
+	BYTE Keys = 0x00;
+	if(GetKeyState('W') & 0x80) Keys |= 0x01;
+	if(GetKeyState('S') & 0x80) Keys |= 0x02;
+	if(GetKeyState('A') & 0x80) Keys |= 0x04;
+	if(GetKeyState('D') & 0x80) Keys |= 0x08;
+	if(GetKeyState('R') & 0x80) Keys |= 0x10;
+	if(GetKeyState('F') & 0x80) Keys |= 0x20;
+
+	if(GetKeyState(VK_SHIFT) & 0x80) Keys |= 0x40;
+	if(GetKeyState(VK_CONTROL) & 0x80) Keys |= 0x80;
+	modelGL->moveCameraByKB(Keys);
 	modelGL->draw();
 	viewGL->swapBuffers();
 	EndPaint(handle,&ps);
@@ -62,32 +91,32 @@ int glCtrl::command(int id, int cmd, LPARAM msg)
 {
 	return 0;
 }
-void glCtrl::threadFunction(void* param)
-{
-	((glCtrl*)param)->runThread();
-}
-void glCtrl::runThread()
-{
-	// set the current RC in this thread
-	//wglMakeCurrent(viewGL->getDC(), viewGL->getRC());
-
-	// initialize OpenGL states
-	modelGL->init();
-
-	// cofigure projection matrix
-	RECT rect;
-	::GetClientRect(handle, &rect);
-	modelGL->setViewport(rect.right, rect.bottom);
-	// rendering loop
-	if(resizeFlag)
-	{
-		modelGL->setViewport(clientWidth, clientHeight);
-		resizeFlag = false;
-	}
-
-	modelGL->draw();
-	viewGL->swapBuffers();
-}
+//void glCtrl::threadFunction(void* param)
+//{
+//	((glCtrl*)param)->runThread();
+//}
+//void glCtrl::runThread()
+//{
+//	 set the current RC in this thread
+//	//wglMakeCurrent(viewGL->getDC(), viewGL->getRC());
+//
+//	// initialize OpenGL states
+//	modelGL->init();
+//
+//	// cofigure projection matrix
+//	RECT rect;
+//	::GetClientRect(handle, &rect);
+//	modelGL->setViewport(rect.right, rect.bottom);
+//	// rendering loop
+//	if(resizeFlag)
+//	{
+//		modelGL->setViewport(clientWidth, clientHeight);
+//		resizeFlag = false;
+//	}
+//
+//	modelGL->draw();
+//	viewGL->swapBuffers();
+//}
 int glCtrl::lButtonDown(WPARAM state, int x, int y)
 {
 	// update mouse position
@@ -156,15 +185,11 @@ int glCtrl::rButtonUp(WPARAM state, int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 int glCtrl::mouseMove(WPARAM state, int x, int y)
 {
-	/*if(state == MK_LBUTTON)
+	if(state == MK_LBUTTON)
 	{
-	modelGL->rotateCamera(x, y);
-	}
-	if(state == MK_RBUTTON)
-	{
-	modelGL->zoomCamera(y);
-	}
-	*/
+		modelGL->rotateCamera(x, y);
+		
+	}	
 	return 0;
 }
 
@@ -179,7 +204,6 @@ int glCtrl::keyDown(int key, LPARAM lParam)
 	{
 		::PostMessage(handle, WM_CLOSE, 0, 0);
 	}
-
 	return 0;
 }
 
@@ -192,10 +216,9 @@ int glCtrl::keyDown(int key, LPARAM lParam)
 ///////////////////////////////////////////////////////////////////////////////
 int glCtrl::size(int width, int height, WPARAM type)
 {
-	resizeFlag = true;
 	clientWidth = width;
 	clientHeight = height;
-
+	modelGL->setViewport(width,height);
 	return 0;
 }
 

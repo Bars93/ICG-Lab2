@@ -7,11 +7,7 @@
 #include <boost/static_assert.hpp>
 #define GLM_FORCE_SSE2
 #include <glm/glm.hpp>
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <glm/matrix.hpp>
-#include <glm/common.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_operation.hpp>
 #include <glm/gtc/matrix_access.hpp>
@@ -22,8 +18,13 @@ struct bitStates {
 	USHORT mouseRightDown : 1;
 	USHORT useShadersflg : 1;
 	USHORT axisDraw : 1;
+	USHORT lighting: 1;
 	USHORT remake : 1;
 	USHORT redraw : 1;
+	USHORT loadPath : 1;
+	USHORT loadSlice : 1;
+	USHORT loadTex : 1;
+	USHORT bindTex : 1;
 };
 class glModel
 {
@@ -33,12 +34,9 @@ private:
 	GLfloat normalDirect;
 	// mouse state
 	GLfloat mouseX, mouseY;
-	bool mouseLeftDown;
-	bool mouseRightDown;
 	// camera properties
 	glm::vec3 X, Y, Z, Position, Reference; // Camera's options
 	// shader's variables
-	BOOL useShadersflg; // using shader's flag 
 	glShader *GLSL; // shader's loader and attacher
 	GLuint program; // shader program ID
 	// buffer's variables
@@ -49,20 +47,22 @@ private:
 	// buffer storages;
 	vector<glm::vec3> quadBuf; // quads buffer (temporary)
 	vector<glm::vec3> normalBuf, normalBuf2, normalBuf3, normalBuf4; // normal buffer
-	vector<glm::vec3> normalVecBuf; // normal vector's buffer
+	//vector<glm::vec3> normalVecBuf; // normal vector's buffer
 
-	vector<glm::vec3> axisBuf;
-	vector<glm::vec3> userPath;
-	vector<glm::vec3> slices;
-	// matrices
-	GLdouble matr[16]; // matrix storage
-	glm::mat4x4 *viewMatr, *viewMatrInverse, modelMatr, projMatr, ViewMatrix; // matrices
+	//vector<glm::vec3> axisBuf; // axis vectors (depr)
+	vector<glm::vec3> userPath; // user define path (original)
+	vector<glm::vec3> slicePath; // calculated path
+	vector<glm::vec2> slice; // slice
+	GLint sliceVertCount, sliceSize, pathSteps;
+	glm::mat4x4 modelMatr, projMatr, ViewMatrix; // matrices
 	// core
-	bool remake;
 	bitStates modelStates;
 
 	bool initBuffers();
-	bool initLights();
+	void initLights();
+
+	bool LoadTexture(LPCWSTR filename);
+	bool bindTexture();
 	bool initTextures();
 
 	bool loadDialog(LPCWSTR dialogTitle, LPWSTR filename);
@@ -80,10 +80,10 @@ public:
 	void lookCamera(const glm::vec3 &pos, const glm::vec3 &Ref, bool RotateAroundReference);
 	void draw();
 
-	void setMouseLeft(bool flag) { mouseLeftDown = flag; };
-	void setMouseRight(bool flag) { mouseRightDown = flag; };
+	void setMouseLeft(bool flag) { modelStates.mouseLeftDown = flag; };
+	void setMouseRight(bool flag) { modelStates.mouseRightDown = flag; };
 	void setMousePosition(int x, int y) { mouseX = GLfloat(x); mouseY = GLfloat(y); };
-
+	void changeLight() { modelStates.lighting = modelStates.lighting == 1 ? 0 : 1;};
 	void rotateCamera(int x, int y);
 	void zoomCamera(int dist);
 	glModel(void);

@@ -2,6 +2,7 @@
 #include "WinApp.h"
 #include "WinProc.h"
 #include "resource.h"
+#include "controlDefs.h"
 HICON WinApp::loadIcon(int id)
 {
 	return (HICON)::LoadImage(hInst, MAKEINTRESOURCE(id), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
@@ -57,6 +58,11 @@ bool WinApp::createWindow(DWORD dwStyle, DWORD dwExStyle) {
 		if(!handle) {
 			globRes = false;
 			ErrorMessage(L"Error window creation");
+		}
+		hBtnState = CreateWindowEx(NULL,L"BUTTON",L"Освещение",WS_CHILD | WS_VISIBLE, width - 150,10,100,20,handle,(HMENU)IDC_BUTTON_LIGHT,hInst,(LPVOID)0);
+		if(!hBtnState) {
+			globRes = false;
+			ErrorMessage(L"Button creation failed");
 		}
 	}
 	else {

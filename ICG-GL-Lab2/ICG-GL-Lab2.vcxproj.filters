@@ -42,9 +42,6 @@
     <ClCompile Include="clComputing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="errorLog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WinApp.h">
@@ -77,7 +74,7 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="errorLog.h">
+    <ClInclude Include="controlDefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

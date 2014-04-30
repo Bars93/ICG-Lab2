@@ -82,7 +82,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="clComputing.cpp" />
-    <ClCompile Include="errorLog.cpp" />
     <ClCompile Include="glCtrl.cpp" />
     <ClCompile Include="glModel.cpp" />
     <ClCompile Include="glShader.cpp" />
@@ -96,7 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clComputing.h" />
-    <ClInclude Include="errorLog.h" />
+    <ClInclude Include="controlDefs.h" />
     <ClInclude Include="glCtrl.h" />
     <ClInclude Include="glHeaders.h" />
     <ClInclude Include="glModel.h" />

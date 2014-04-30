@@ -1,7 +1,7 @@
+#pragma warning (disable : 4996)
 #include "glModel.h"
 #include <stdlib.h>
-#include <sstream>
-#include <strstream>
+#include <cwchar>
 #define sizeWSTR(a) (sizeof((a))/sizeof(WCHAR))
 #define sizeSTR(a) (sizeof((a))/sizeof(CHAR))
 
@@ -10,13 +10,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 glModel::glModel() : 
-	mouseLeftDown(false), 
-	mouseRightDown(false),
 	GLSL(NULL),
-	useShadersflg(false),
-	viewMatr(NULL),
-	viewMatrInverse(NULL),
-	modelMatr(NULL),
 	normalDirect(1.0f)
 {
 	X = glm::vec3(1.0f,0.0f,0.0f);
@@ -27,13 +21,6 @@ glModel::glModel() :
 	modelStates.redraw = 1;
 	Position = glm::vec3(0.0f,0.0f,0.5f);
 	Reference = glm::vec3(0.0f);
-	setMatrPtrs(&ViewMatrix,NULL);
-}
-
-void glModel::setMatrPtrs(glm::mat4x4 *_viewMatr, glm::mat4x4 *_viewMatrInv) {
-	viewMatr = _viewMatr;
-	viewMatrInverse = _viewMatrInv;
-
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,44 +38,43 @@ glModel::~glModel(void)
 bool glModel::init()
 {
 	bool globRes = true;
-	if(glewInit() != GLEW_OK) {
-		globRes = false;
-	}
-	if(globRes) {
-		GLSL = new glShader(handle);
-		if((program = GLSL->loadAndAttach("shaders\\ICG-Lab2.vert","shaders\\ICG-Lab2.frag")) != -1) {
-			modelStates.useShadersflg = 1;
-		}
-		else {
-			globRes = false;
-			modelStates.useShadersflg = 0;
-		}
-		modelStates.useShadersflg  = 0;
-		// track material ambient and diffuse from surface color, call it before glEnable(GL_COLOR_MATERIAL)
-		glClearColor(255,255,255, 1);
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
-		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-		GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f}; 
-		GLfloat lightPos0[] = {10.0f, 10.0f, 2.0f, 1.0f}; 
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
-		glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
-		glEnable(GL_COLOR_MATERIAL);
-		glDepthFunc(GL_LEQUAL); 
-		if(initBuffers()) {
-			lookCamera(glm::vec3(11.00f, 12.00f, -4.00f), glm::vec3(0.0f, 0.0f, 0.0f),false);
-		}
-		else {
-			globRes = false;
-		}
 
+	GLSL = new glShader(handle);
+	if((program = GLSL->loadAndAttach("shaders\\ICG-Lab2.vert","shaders\\ICG-Lab2.frag")) != -1) {
+		modelStates.useShadersflg = 1;
+	}
+	else {
+		globRes = false;
+		modelStates.useShadersflg = 0;
+	}
+	modelStates.useShadersflg  = 0;
+
+	glClearColor(255,255,255, 1);
+	glDepthFunc(GL_LEQUAL); 
+	loadFileData();
+	if(modelStates.loadPath && modelStates.loadSlice && initBuffers()) {
+		lookCamera(glm::vec3(11.00f, 12.00f, -4.00f), glm::vec3(0.0f, 0.0f, 0.0f),false);
+		initLights();
+	}
+	else {
+		globRes = false;
 	}
 	GLuint err = glGetError();
 	if(err > 0) {
 		globRes = false;
 	}
 	return globRes;
+}
+void glModel::initLights() {
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+	GLfloat lightColor0[] = {1.0f, 1.0f, 1.0f, 1.0f}; 
+	GLfloat lightPos0[] = {10.0f, 10.0f, 2.0f, 1.0f}; 
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, lightColor0);
+	glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
+	glEnable(GL_COLOR_MATERIAL);
 }
 bool glModel::initBuffers() {
 	bool globRes = true;
@@ -186,13 +172,15 @@ bool glModel::initBuffers() {
 void glModel::draw()
 {
 	// clear buffer
-	static bool first = false;
 	glClearColor(0.0,0.0,0.0,1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if(modelStates.lighting) {
+		initLights();
+	}
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&ViewMatrix[0][0]);
+	glLoadMatrixf(glm::value_ptr(ViewMatrix));
 	glPushMatrix();
-	glMultMatrixf(&modelMatr[0][0]);
+	glMultMatrixf(glm::value_ptr(modelMatr));
 	/*if(useShadersflg)
 	GLSL->useProgram();*/
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -201,7 +189,7 @@ void glModel::draw()
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER,vnID);
 	glNormalPointer(GL_FLOAT,0,(GLvoid*)0);
-	glColor3ub(15,124,141);
+	glColor3ub(24,101,155);
 	glDrawArrays(GL_QUADS,0,vertexCount);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
@@ -209,6 +197,7 @@ void glModel::draw()
 	glUseProgram(0);
 	glPopMatrix();
 	glFlush();
+	glDisable(GL_LIGHTING);
 	GLint err = glGetError();
 }
 glm::vec3 glModel::calculateNormal(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c) {
@@ -242,14 +231,12 @@ void glModel::setViewport(int w, int h)
 	this->height = GLfloat(h);
 	GLfloat aspect = width / height;
 	// set viewport to be the entire window
-	glViewport(0,0,w,h);
-	//glMatrixMode(GL_MODELVIEW);
+	glViewport(0,0,w-180,h);
 	modelMatr = glm::translate(glm::vec3(0.0f,5.0f,0.0f));
-	//glLoadMatrixf(&modelMatr[0][0]);
 	glMatrixMode(GL_PROJECTION);
 	projMatr = glm::perspective(45.0f, aspect,  0.125f, 512.0f);
-	if(!useShadersflg)
-		glLoadMatrixf(&projMatr[0][0]);
+	if(!modelStates.useShadersflg)
+		glLoadMatrixf(glm::value_ptr(projMatr));
 }
 
 
@@ -258,7 +245,7 @@ void glModel::setViewport(int w, int h)
 ///////////////////////////////////////////////////////////////////////////////
 void glModel::rotateCamera(int x, int y)
 {
-	if(mouseLeftDown)
+	if(modelStates.mouseLeftDown)
 	{
 		// moving by x, by y (of window)
 		GLfloat dx = GLfloat(x) - mouseX;
@@ -275,7 +262,7 @@ void glModel::rotateCamera(int x, int y)
 			Y = glm::rotate(Y, DeltaX, glm::vec3(0.0f, 1.0f, 0.0f));
 			Z = glm::rotate(Z, DeltaX, glm::vec3(0.0f, 1.0f, 0.0f));
 		}
-		
+
 		if(dy != 0)
 		{
 			// moving top/bottom
@@ -314,12 +301,7 @@ void glModel::zoomCamera(int delta)
 }
 // Calculate view matrix
 void glModel::calculateViewMatrix() {
-	if(viewMatr != NULL) {
-		*viewMatr = glm::mat4x4(X.x,Y.x,Z.x,0.0f,X.y,Y.y,Z.y,0.0f,X.z,Y.z,Z.z,0.0f,-glm::dot(X,Position),-glm::dot(Y,Position),-glm::dot(Z,Position),1.0f);
-		if(viewMatrInverse != NULL) {
-			*viewMatrInverse = glm::inverse(*viewMatr);
-		}
-	}
+		ViewMatrix = glm::mat4x4(X.x,Y.x,Z.x,0.0f,X.y,Y.y,Z.y,0.0f,X.z,Y.z,Z.z,0.0f,-glm::dot(X,Position),-glm::dot(Y,Position),-glm::dot(Z,Position),1.0f);
 }
 void glModel::moveCameraByKB(int Keys) {
 	float Speed = 5.0f;
@@ -351,14 +333,17 @@ void glModel::moveCameraByKB(int Keys) {
 	calculateViewMatrix();
 }
 bool glModel::loadDialog(LPCWSTR dialogTitle, LPWSTR filename) {
+	static WCHAR cwd[MAX_PATH] = {0};
+	GetCurrentDirectory(MAX_PATH,cwd);
 	OPENFILENAME ofn;
 	ZeroMemory(&ofn,sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = handle;
-	ofn.lpstrFilter = L"*.OBJ";
+	ofn.lpstrFilter = L"Object Data Files\0*.OBJ\0\0";
 	ofn.lpstrFile = filename;
-	ofn.nMaxFile = sizeWSTR(filename);
+	ofn.nMaxFile = FILENAME_MAX;
 	ofn.lpstrTitle = dialogTitle;
+	ofn.lpstrInitialDir = cwd;
 	ofn.Flags = OFN_DONTADDTORECENT | OFN_ENABLESIZING 
 		| OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NONETWORKBUTTON | OFN_PATHMUSTEXIST;
 	if(GetOpenFileName(&ofn) == NULL) {
@@ -376,24 +361,82 @@ bool glModel::loadDialog(LPCWSTR dialogTitle, LPWSTR filename) {
 	if(fp) { \
 	fclose(fp); \
 	fp = NULL; \
-	} \
-	else { \
-	MessageBox(NULL,L"File already closed. closeFile error",L"Close file", MB_OK | MB_ICONERROR); \
-}
+	} 
 void glModel::loadFileData() {
 	LPCWSTR mode = L"r";
+	GLfloat min;
+	GLint num = -1, k = 0;
+	glm::vec2 vert;
 	WCHAR buf[FILENAME_MAX];
 	FILE *fp = NULL;
 	if(MessageBox(handle,L"Would you like to load Data files from?",L"ICG GL Lab-2", MB_YESNO | MB_ICONQUESTION) == IDYES) {
 		buf[0] = L'\0';
 		if(loadDialog(L"Slice file choice ...",buf)) {
-			if(lstrlenW(buf) > 3) {
+			if(lstrlenW(buf) > 5) {
 				fp = _wfopen(buf,mode);
 				if(fp) {
-					glm::vec2 sl_vert;
+					while(!feof(fp)) {
+						GLfloat x;
+						fgetws(buf,FILENAME_MAX,fp);
+						if(buf[0] == btowc('v') && buf[1] == btowc(' ')) {
+							swscanf(buf+2,L"%f %f %f", &x, &vert.x, &vert.y);
+							slice.push_back(vert);
+							if(num == -1) {
+								min = vert.x;
+								num = 0;
+							}
+							else if(abs(vert.x - min) < 1e-7) {
+								min = vert.x;
+								num = k;
+							}
+							++k;
+						}
+					}
+					sliceVertCount = slice.size();
+					sliceSize = 40;
+					modelStates.loadSlice = 1;
 					closeFile(fp);
 				}
 			}
+		} 
+		// calculating normals direction
+		{
+			glm::vec3 v1, v2, v3;
+			int n1 = num - 1;
+			if(n1 < 0) {
+				n1+=sliceVertCount;
+			}
+			int n2 = num;
+			int n3 = num+1;
+			n3 %= sliceVertCount;
+			v1 = glm::vec3(0,slice[n1].y,slice[n2].x);
+			v2 = glm::vec3(0,slice[n2].y,slice[n2].x);
+			v3 = glm::vec3(0,slice[n3].y,slice[n3].x);
+			if(calculateNormal(v1,v2,v3).x >= 0.0f) {
+				normalDirect = -1.0f;
+			}
+			else {
+				normalDirect = 1.0f;
+			}
 		}
+		buf[0] = L'\0';
+		if(loadDialog(L"Path file choice ...",buf)) {
+			if(lstrlenW(buf) > 5) {
+				fp = _wfopen(buf,mode);
+				if(fp) {
+					while(!feof(fp)) {
+						glm::vec3 path_vert;
+						fgetws(buf,FILENAME_MAX,fp);
+						if(buf[0] == btowc('v') && buf[1] == btowc(' ')) {
+							swscanf(buf+2,L"%f %f %f",&path_vert.x,&path_vert.y,&path_vert.z);
+							userPath.push_back(path_vert);
+						}
+					}
+					pathSteps = userPath.size();
+					modelStates.loadPath = 1;
+					closeFile(fp);
+				}
+			}
+		} 
 	}
 }

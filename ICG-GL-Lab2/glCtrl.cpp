@@ -1,6 +1,6 @@
 #include "glCtrl.h"
 #include "resource.h"
-
+#include "controlDefs.h"
 glCtrl::glCtrl(glView* view,glModel* model) : modelGL(model), viewGL(view),
 	threadHandle(0), threadId(0),
 	clientWidth(0), clientHeight(0)
@@ -104,6 +104,9 @@ int glCtrl::command(int id, int cmd, LPARAM msg)
 		break;
 	case ID_MENU_ABOUT:
 
+		break;
+	case IDC_BUTTON_LIGHT:
+		modelGL->changeLight();
 		break;
 	}
 	return 0;

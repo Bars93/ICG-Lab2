@@ -3,14 +3,16 @@
 #ifndef WINAPP_H
 #define WINAPP_H
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h> 
+#include <Windows.h> 
+#include <windowsx.h>
+#include <CommCtrl.h>
 #include <wchar.h> // for UNICODE characters functions
 #include "WinCtrl.h"
 class WinApp
 {
 	int width, height;
 	int x,y;
-	HWND handle, parentHandle;
+	HWND handle, parentHandle, hBtnState;
 	HMENU menuHandle;
 	HINSTANCE hInst;
 	bool fullscreen;

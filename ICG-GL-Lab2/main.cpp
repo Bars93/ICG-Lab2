@@ -9,7 +9,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	glModel model;
 	glView view;
 	glCtrl glctrl(&view,&model);
-	WinApp glWin(800,600,&glctrl,L"ICG GL Lab2", L"ICG-GL-Lab2",false,0,hInstance);
+	WinApp glWin(1000,600,&glctrl,L"ICG GL Lab2", L"ICG-GL-Lab2",false,0,hInstance);
 	if(glWin.createWindow(WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,WS_EX_APPWINDOW)) {
 		glWin.showWindow(SW_SHOWNORMAL);
 		MSG msg;

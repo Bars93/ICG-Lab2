@@ -10,13 +10,15 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	glView view;
 	glCtrl glctrl(&view,&model);
 	WinApp glWin(800,600,&glctrl,L"ICG GL Lab2", L"ICG-GL-Lab2",false,0,hInstance);
-	glWin.createWindow(WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,WS_EX_APPWINDOW);
-	glWin.showWindow(SW_SHOWNORMAL);
-	MSG msg;
-	while(GetMessage(&msg, NULL, 0, 0) != NULL ) 
-	{ 
-		TranslateMessage(&msg); 
-		DispatchMessage(&msg); 
-	} 
-	return msg.wParam;  
+	if(glWin.createWindow(WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,WS_EX_APPWINDOW)) {
+		glWin.showWindow(SW_SHOWNORMAL);
+		MSG msg;
+		while(GetMessage(&msg, NULL, 0, 0) != NULL ) 
+		{ 
+			TranslateMessage(&msg); 
+			DispatchMessage(&msg); 
+		} 
+		return msg.wParam;  
+	}
+	return -1;
 } 

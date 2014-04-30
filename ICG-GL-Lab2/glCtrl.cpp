@@ -1,4 +1,5 @@
 #include "glCtrl.h"
+#include "resource.h"
 
 glCtrl::glCtrl(glView* view,glModel* model) : modelGL(model), viewGL(view),
 	threadHandle(0), threadId(0),
@@ -89,34 +90,24 @@ int glCtrl::paint()
 }
 int glCtrl::command(int id, int cmd, LPARAM msg)
 {
+	switch(id) {
+	case ID_MENU_EXIT:
+		if(MessageBox(handle,L"Уже уходите?",L"ICG GL Lab2", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+			PostQuitMessage(EXIT_SUCCESS);
+		}
+		break;
+	case ID_MENU_LOADDATA:
+		// Add load func call
+		break;
+	case ID_MENU_TECHDATA:
+
+		break;
+	case ID_MENU_ABOUT:
+
+		break;
+	}
 	return 0;
 }
-//void glCtrl::threadFunction(void* param)
-//{
-//	((glCtrl*)param)->runThread();
-//}
-//void glCtrl::runThread()
-//{
-//	 set the current RC in this thread
-//	//wglMakeCurrent(viewGL->getDC(), viewGL->getRC());
-//
-//	// initialize OpenGL states
-//	modelGL->init();
-//
-//	// cofigure projection matrix
-//	RECT rect;
-//	::GetClientRect(handle, &rect);
-//	modelGL->setViewport(rect.right, rect.bottom);
-//	// rendering loop
-//	if(resizeFlag)
-//	{
-//		modelGL->setViewport(clientWidth, clientHeight);
-//		resizeFlag = false;
-//	}
-//
-//	modelGL->draw();
-//	viewGL->swapBuffers();
-//}
 int glCtrl::lButtonDown(WPARAM state, int x, int y)
 {
 	// update mouse position
@@ -188,7 +179,7 @@ int glCtrl::mouseMove(WPARAM state, int x, int y)
 	if(state == MK_LBUTTON)
 	{
 		modelGL->rotateCamera(x, y);
-		
+
 	}	
 	return 0;
 }

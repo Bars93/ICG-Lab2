@@ -52,7 +52,14 @@ bool glView::createContext(HWND handle, int colorBits, int depthBits, int stenci
 	// create a new OpenGL rendering context
 	if(oglVersion >= OGL_V11 && oglVersion <= OGL_V21) {
 		hglrc = wglCreateContext(hdc);
-		wglMakeCurrent(hdc, hglrc); // Create OpenGL 2.1 (GLSL 1.30) or earlier context
+		if(hglrc == NULL) {
+			MessageBox(handle,L"wglCreateContext error! GL context creation failed!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		if( (wglMakeCurrent(hdc, hglrc)) == FALSE) { // Create OpenGL 2.1 (GLSL 1.30) or earlier context
+			MessageBox(handle,L"wglMakeCurrent error! GL context creation failed!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+			return false;
+		}
 		m_hrc = hglrc;
 		if (GLEW_OK != glewInit())
 		{
@@ -78,11 +85,18 @@ bool glView::createContext(HWND handle, int colorBits, int depthBits, int stenci
 	else if(oglVersion >= OGL_V30 && oglVersion <= OGL_V44) {
 		/* Create OpenGL 3.0+ (GLSL 1.50+) context, using GLEW, future realise */
 		hglrc = wglCreateContext(hdc);
-		wglMakeCurrent(hdc, hglrc); // Create OpenGL 2.1 (GLSL 1.30) or earlier context
-		GLenum err = glewInit();
-		if (GLEW_OK != err)
+		if(hglrc == NULL) {
+			MessageBox(handle,L"wglCreateContext error! GL context creation failed!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		if( (wglMakeCurrent(hdc, hglrc)) == FALSE) { // Create OpenGL 2.1 (GLSL 1.30) or earlier context
+			MessageBox(handle,L"wglMakeCurrent error! GL context creation failed!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+			return false;
+		}
+		if (GLEW_OK != glewInit())
 		{
 			MessageBox(handle,L"GLEW is not initialized!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+			closeContext(handle);
 			return false;
 		}
 		static const GLint attribs[] =
@@ -113,8 +127,6 @@ bool glView::createContext(HWND handle, int colorBits, int depthBits, int stenci
 			}
 		}
 		//Checking GL version
-		const GLubyte *GLVersionString = glGetString(GL_VERSION);
-
 		//Or better yet, use the GL3 way to get the version number
 #if defined(IRBIS_GLFW_DBG_MODE)
 		int OpenGLVersion[2];
@@ -136,12 +148,6 @@ bool glView::createContext(HWND handle, int colorBits, int depthBits, int stenci
 	return true;
 }
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// choose pixel format
-// By default, pdf.dwFlags is set PFD_DRAW_TO_WINDOW, PFD_DOUBLEBUFFER and PFD_SUPPORT_OPENGL.
-///////////////////////////////////////////////////////////////////////////////
 bool glView::setPixelFormat(HDC hdc, int colorBits, int depthBits, int stencilBits)
 {
 	PIXELFORMATDESCRIPTOR pfd, *ppfd = &pfd;

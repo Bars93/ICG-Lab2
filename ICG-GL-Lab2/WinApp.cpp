@@ -40,6 +40,7 @@ ATOM WINAPI WinApp::RegWindow() {
 	WCE.hIconSm       = loadIcon(IDI_OPENGL_ICON);
 	WCE.hCursor       = LoadCursor (NULL,IDC_ARROW); 
 	WCE.lpszClassName = szWinClassName;
+	WCE.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
 	globRes = RegisterClassEx(&WCE);
 	if(!globRes) {
 		ErrorMessage(L"Error register window class!");
@@ -70,4 +71,6 @@ void WinApp::showWindow(int cmdShow) {
 WinApp::~WinApp(void)
 {
 	// specific "desctructions"
+	DestroyWindow(handle);
+	UnregisterClass(szWinClassName,hInst);
 }

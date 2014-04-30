@@ -17,10 +17,20 @@
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 using std::vector;
+struct bitStates {
+	USHORT mouseLeftDown : 1;
+	USHORT mouseRightDown : 1;
+	USHORT useShadersflg : 1;
+	USHORT axisDraw : 1;
+	USHORT remake : 1;
+	USHORT redraw : 1;
+};
 class glModel
 {
+private:
 	GLfloat width, height; // width and height of client window space
 	HWND handle; // window handle
+	GLfloat normalDirect;
 	// mouse state
 	GLfloat mouseX, mouseY;
 	bool mouseLeftDown;
@@ -34,28 +44,36 @@ class glModel
 	// buffer's variables
 	GLuint vbID, vnID, vnVecBuf; // buffers ID: vbID - vertex buffer, vnID - vertexNormals, vnVecBuf - normal vector's
 	GLuint vertexCount; // count of vertexes
-	// attibute and uniform variables
-	GLint colAttrib,attrLoc; // attribute location - may be deprecated
+
+
 	// buffer storages;
 	vector<glm::vec3> quadBuf; // quads buffer (temporary)
-	vector<glm::vec3> normalBuf; // normal buffer
+	vector<glm::vec3> normalBuf, normalBuf2, normalBuf3, normalBuf4; // normal buffer
 	vector<glm::vec3> normalVecBuf; // normal vector's buffer
+
+	vector<glm::vec3> axisBuf;
+	vector<glm::vec3> userPath;
+	vector<glm::vec3> slices;
 	// matrices
 	GLdouble matr[16]; // matrix storage
 	glm::mat4x4 *viewMatr, *viewMatrInverse, modelMatr, projMatr, ViewMatrix; // matrices
 	// core
-	struct {
-		float *inBuf;
-		float *outBuf;
-	
-	} vertData;
 	bool remake;
+	bitStates modelStates;
+
+	bool initBuffers();
+	bool initLights();
+	bool initTextures();
+
+	bool loadDialog(LPCWSTR dialogTitle, LPWSTR filename);
+
+	glm::vec3 calculateNormal(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c);
 public:
 	bool init();    // initialize OpenGL states
-	bool initBuffers();
 
+	void loadFileData();
 	void moveCameraByKB(int key);
-	void setCamera(GLdouble posX, GLdouble posY, GLdouble posZ, GLdouble targetX, GLdouble targetY, GLdouble targetZ);
+	//void setCamera(GLdouble posX, GLdouble posY, GLdouble posZ, GLdouble targetX, GLdouble targetY, GLdouble targetZ);
 	void calculateViewMatrix();
 	void setViewport(int width, int height);
 	void setMatrPtrs(glm::mat4x4 *_viewMatr, glm::mat4x4 *_viewMatrInv);

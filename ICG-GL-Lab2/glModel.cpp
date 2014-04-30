@@ -1,9 +1,14 @@
 #include "glModel.h"
 #include <stdlib.h>
+#include <sstream>
+#include <strstream>
+#define sizeWSTR(a) (sizeof((a))/sizeof(WCHAR))
+#define sizeSTR(a) (sizeof((a))/sizeof(CHAR))
 
 ///////////////////////////////////////////////////////////////////////////////
 // default ctor
 ///////////////////////////////////////////////////////////////////////////////
+
 glModel::glModel() : 
 	mouseLeftDown(false), 
 	mouseRightDown(false),
@@ -11,12 +16,15 @@ glModel::glModel() :
 	useShadersflg(false),
 	viewMatr(NULL),
 	viewMatrInverse(NULL),
-	modelMatr(NULL)
+	modelMatr(NULL),
+	normalDirect(1.0f)
 {
 	X = glm::vec3(1.0f,0.0f,0.0f);
 	Y = glm::vec3(0.0f,1.0f,0.0f);
 	Z = glm::vec3(0.0f,0.0f,1.0f);
-
+	memset(&modelStates,0,sizeof(bitStates));
+	modelStates.remake = 1;
+	modelStates.redraw = 1;
 	Position = glm::vec3(0.0f,0.0f,0.5f);
 	Reference = glm::vec3(0.0f);
 	setMatrPtrs(&ViewMatrix,NULL);
@@ -49,13 +57,13 @@ bool glModel::init()
 	if(globRes) {
 		GLSL = new glShader(handle);
 		if((program = GLSL->loadAndAttach("shaders\\ICG-Lab2.vert","shaders\\ICG-Lab2.frag")) != -1) {
-			useShadersflg = true;
+			modelStates.useShadersflg = 1;
 		}
 		else {
 			globRes = false;
-			useShadersflg = false;
+			modelStates.useShadersflg = 0;
 		}
-		useShadersflg = false;
+		modelStates.useShadersflg  = 0;
 		// track material ambient and diffuse from surface color, call it before glEnable(GL_COLOR_MATERIAL)
 		glClearColor(255,255,255, 1);
 		glEnable(GL_DEPTH_TEST);
@@ -69,7 +77,7 @@ bool glModel::init()
 		glEnable(GL_COLOR_MATERIAL);
 		glDepthFunc(GL_LEQUAL); 
 		if(initBuffers()) {
-			lookCamera(glm::vec3(2.00f, 4.00f, -2.00f), glm::vec3(0.0f, 0.0f, 0.0f),false);
+			lookCamera(glm::vec3(11.00f, 12.00f, -4.00f), glm::vec3(0.0f, 0.0f, 0.0f),false);
 		}
 		else {
 			globRes = false;
@@ -184,52 +192,6 @@ void glModel::draw()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(&ViewMatrix[0][0]);
 	glPushMatrix();
-	if(true)
-	{
-		glLineWidth(2.0f);
-
-		glBegin(GL_LINES);
-
-		glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-
-		glVertex3f(0.0f, 0.0f, 0.0f); glVertex3f(1.0f, 0.0f, 0.0f);
-		glVertex3f(1.0f, 0.1f, 0.0f); glVertex3f(1.1f, -0.1f, 0.0f);
-		glVertex3f(1.1f, 0.1f, 0.0f); glVertex3f(1.0f, -0.1f, 0.0f);
-
-		glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-
-		glVertex3f(0.0f, 0.0f, 0.0f); glVertex3f(0.0f, 1.0f, 0.0f);
-		glVertex3f(-0.05f, 1.25f, 0.0f); glVertex3f(0.0f, 1.15f, 0.0f);
-		glVertex3f(0.05f,1.25f, 0.0f); glVertex3f(0.0f, 1.15f, 0.0f);
-		glVertex3f(0.0f,1.15f, 0.0f); glVertex3f(0.0f, 1.05f, 0.0f);
-
-		glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-
-		glVertex3f(0.0f,0.0f,0.0f); glVertex3f(0.0f, 0.0f, 1.0f);
-		glVertex3f(-0.05f,0.1f,1.05f); glVertex3f(0.05f, 0.1f, 1.05f);
-		glVertex3f(0.05f,0.1f,1.05f); glVertex3f(-0.05f, -0.1f, 1.05f);
-		glVertex3f(-0.05f,-0.1f,1.05f); glVertex3f(0.05f, -0.1f, 1.05f);
-
-		glEnd();
-
-		glLineWidth(1.0f);
-
-		glColor3f(1.0f, 1.0f, 1.0f);
-
-		glBegin(GL_LINES);
-
-		float d = 50.0f;
-
-		for(float i = -d; i <= d; i += 1.0f)
-		{
-			glVertex3f(i, 0.0f, -d);
-			glVertex3f(i, 0.0f, d);
-			glVertex3f(-d, 0.0f, i);
-			glVertex3f(d, 0.0f, i);
-		}
-
-		glEnd();
-	}
 	glMultMatrixf(&modelMatr[0][0]);
 	/*if(useShadersflg)
 	GLSL->useProgram();*/
@@ -239,7 +201,7 @@ void glModel::draw()
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER,vnID);
 	glNormalPointer(GL_FLOAT,0,(GLvoid*)0);
-	glColor3ub(15,124,140);
+	glColor3ub(15,124,141);
 	glDrawArrays(GL_QUADS,0,vertexCount);
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
@@ -249,14 +211,9 @@ void glModel::draw()
 	glFlush();
 	GLint err = glGetError();
 }
-///////////////////////////////////////////////////////////////////////////////
-// set camera position and lookat direction
-///////////////////////////////////////////////////////////////////////////////
-void glModel::setCamera(GLdouble posX, GLdouble posY, GLdouble posZ, GLdouble targetX, GLdouble targetY, GLdouble targetZ)
-{
-	gluLookAt(posX, posY, posZ, targetX, targetY, targetZ, 0.0, 1.0, 0.0); // eye(x,y,z), focal(x,y,z), up(x,y,z)
+glm::vec3 glModel::calculateNormal(glm::vec3 &a, glm::vec3 &b, glm::vec3 &c) {
+	return glm::normalize(glm::cross(c - a, b - a))*normalDirect;
 }
-
 void glModel::lookCamera(const glm::vec3 &pos, const glm::vec3 &ref, bool RotateAroundReference) {
 
 	this->Position = pos;
@@ -290,14 +247,9 @@ void glModel::setViewport(int w, int h)
 	modelMatr = glm::translate(glm::vec3(0.0f,5.0f,0.0f));
 	//glLoadMatrixf(&modelMatr[0][0]);
 	glMatrixMode(GL_PROJECTION);
-	projMatr = glm::perspective(45.0f, width / height,  0.005f, 512.0f);
+	projMatr = glm::perspective(45.0f, aspect,  0.125f, 512.0f);
 	if(!useShadersflg)
 		glLoadMatrixf(&projMatr[0][0]);
-	/*
-	gluPerspective(45.0f, aspect, 1.0f, -1.0f);
-	setCamera(-2,-2,-2,0.0,0.0,0.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();*/
 }
 
 
@@ -308,23 +260,25 @@ void glModel::rotateCamera(int x, int y)
 {
 	if(mouseLeftDown)
 	{
+		// moving by x, by y (of window)
 		GLfloat dx = GLfloat(x) - mouseX;
 		GLfloat dy = GLfloat(y) - mouseY;
+		// setting up sensetivity
 		float Sensitivity = 1.00f;
-
-		Position -= Reference;
 
 		if(dx != 0)
 		{
+			// moving left/right
 			GLfloat DeltaX = dx * Sensitivity;
-
+			// rotate our basic vector's around physical Y
 			X = glm::rotate(X, DeltaX, glm::vec3(0.0f, 1.0f, 0.0f));
 			Y = glm::rotate(Y, DeltaX, glm::vec3(0.0f, 1.0f, 0.0f));
 			Z = glm::rotate(Z, DeltaX, glm::vec3(0.0f, 1.0f, 0.0f));
 		}
-
+		
 		if(dy != 0)
 		{
+			// moving top/bottom
 			GLfloat DeltaY = dy * Sensitivity;
 
 			Y = glm::rotate(Y, DeltaY, X);
@@ -336,7 +290,7 @@ void glModel::rotateCamera(int x, int y)
 				Y = glm::cross(Z, X);
 			}
 		}
-		Position = Reference + Z * glm::length(Position);
+		Reference = Z * glm::length(Position);  
 		calculateViewMatrix();
 		mouseX = GLfloat(x);
 		mouseY = GLfloat(y);
@@ -350,15 +304,12 @@ void glModel::rotateCamera(int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 void glModel::zoomCamera(int delta)
 {
-
-	Position -= Reference;
-	if(delta < 0 && glm::length(Position) < 500.0f) {
-		Position += Position * 0.25f;
+	if(delta < 0) {
+		Position += Reference * 0.025f;
 	}
-	if(delta > 0 && glm::length(Position) > 0.05f) {
-		Position -= Position * 0.25f;
+	else if(delta > 0) {	
+		Position -= Reference * 0.025f;
 	}
-	Position += Reference;
 	calculateViewMatrix();
 }
 // Calculate view matrix
@@ -371,7 +322,6 @@ void glModel::calculateViewMatrix() {
 	}
 }
 void glModel::moveCameraByKB(int Keys) {
-
 	float Speed = 5.0f;
 
 	if(Keys & 0x40) Speed *= 2.0f;
@@ -399,4 +349,51 @@ void glModel::moveCameraByKB(int Keys) {
 	Position += Movement;
 	Reference += Movement;
 	calculateViewMatrix();
+}
+bool glModel::loadDialog(LPCWSTR dialogTitle, LPWSTR filename) {
+	OPENFILENAME ofn;
+	ZeroMemory(&ofn,sizeof(OPENFILENAME));
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = handle;
+	ofn.lpstrFilter = L"*.OBJ";
+	ofn.lpstrFile = filename;
+	ofn.nMaxFile = sizeWSTR(filename);
+	ofn.lpstrTitle = dialogTitle;
+	ofn.Flags = OFN_DONTADDTORECENT | OFN_ENABLESIZING 
+		| OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_NONETWORKBUTTON | OFN_PATHMUSTEXIST;
+	if(GetOpenFileName(&ofn) == NULL) {
+		if(CommDlgExtendedError() == NULL) {
+			MessageBox(handle,L"Some error with dialog init/run",L"GL_MODEL CLASS", MB_OK | MB_ICONEXCLAMATION);
+		}
+		else {
+			MessageBox(handle,L"File not choose. You did cancel operation",L"GL_MODEL CLASS", MB_OK | MB_ICONEXCLAMATION);
+		}
+		return false;
+	}
+	return true;
+}
+#define closeFile(fp) \
+	if(fp) { \
+	fclose(fp); \
+	fp = NULL; \
+	} \
+	else { \
+	MessageBox(NULL,L"File already closed. closeFile error",L"Close file", MB_OK | MB_ICONERROR); \
+}
+void glModel::loadFileData() {
+	LPCWSTR mode = L"r";
+	WCHAR buf[FILENAME_MAX];
+	FILE *fp = NULL;
+	if(MessageBox(handle,L"Would you like to load Data files from?",L"ICG GL Lab-2", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+		buf[0] = L'\0';
+		if(loadDialog(L"Slice file choice ...",buf)) {
+			if(lstrlenW(buf) > 3) {
+				fp = _wfopen(buf,mode);
+				if(fp) {
+					glm::vec2 sl_vert;
+					closeFile(fp);
+				}
+			}
+		}
+	}
 }

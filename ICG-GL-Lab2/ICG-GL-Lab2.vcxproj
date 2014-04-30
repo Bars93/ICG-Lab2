@@ -82,6 +82,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="clComputing.cpp" />
+    <ClCompile Include="errorLog.cpp" />
     <ClCompile Include="glCtrl.cpp" />
     <ClCompile Include="glModel.cpp" />
     <ClCompile Include="glShader.cpp" />
@@ -95,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="clComputing.h" />
+    <ClInclude Include="errorLog.h" />
     <ClInclude Include="glCtrl.h" />
     <ClInclude Include="glHeaders.h" />
     <ClInclude Include="glModel.h" />
@@ -113,7 +115,7 @@
     <Image Include="opengl.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ICG-GL-Lab2.rc" />
+    <ResourceCompile Include="ICG-GL-Lab2_resources.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

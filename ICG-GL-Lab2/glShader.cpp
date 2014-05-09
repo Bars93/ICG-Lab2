@@ -5,46 +5,53 @@
 void glShader::infoMessage(LPCWSTR text) {
 	MessageBox(handle,text,INFO_MSG_TITLE, MB_OK | MB_ICONEXCLAMATION);
 }
-void glShader::printProgramLog( GLuint program )
+void glShader::printProgramLog()
 {
 	//Make sure name is shader
-	static WCHAR infoLogUnicode[512];
-	static CHAR infoLog[512];
-	if( glIsProgram( program ) )
+	static WCHAR infoLogUnicode[1024];
+	if( glIsProgram( programID ) )
 	{
 		//Program log length
 		int infoLogLength = 0;
 		int maxLength = infoLogLength;
 
 		//Get info string length
-		glGetProgramiv( program, GL_INFO_LOG_LENGTH, &maxLength );
-
+		glGetProgramiv( programID, GL_INFO_LOG_LENGTH, &maxLength );
+		vector<GLchar> infoLog(maxLength,'\0');
 		//Allocate string
-		LPCSTR ilptr = infoLog;
+		LPSTR ilptr = &infoLog[0];
 
 		//Get info log
-		glGetProgramInfoLog( program, maxLength, &infoLogLength, infoLog );
+		glGetProgramInfoLog( programID, maxLength, &infoLogLength, ilptr);
 		if( infoLogLength > 0 )
 		{
 			//Print Log
-			mbstowcs(infoLogUnicode,ilptr,maxLength);
+			mbstowcs(infoLogUnicode,ilptr,min(maxLength,1024));
 			infoMessage(infoLogUnicode);
 		}
+		infoLog.clear();
 		//Deallocate string
 	}
 	else
 	{
-		wsprintf(infoLogUnicode,L"Object %u is not program",program);
+		wsprintf(infoLogUnicode,L"Object %u is not program",programID);
 		infoMessage(infoLogUnicode);
-
 	}
 }
-void glShader::printShaderLog( GLuint shader )
+void glShader::BindAttribLocation(GLuint loc, const GLchar *attrName) {
+	glBindAttribLocation(programID,loc,attrName);
+}
+const GLint glShader::getUniformLocation(const GLchar  *unifName) const {
+	return  glGetUniformLocation(programID,(const GLchar *) unifName);
+}
+const GLint glShader::getAttribLocation(const GLchar *attrName) const {
+	return glGetAttribLocation(programID,(const GLchar *) attrName);
+}
+void glShader::printShaderLog( GLuint &shader )
 {
 	//Make sure name is shader
-	
+
 	static WCHAR infoLogUnicode[512];
-	static CHAR infoLog[512];
 	if( glIsShader( shader ) )
 	{
 		//Shader log length
@@ -53,16 +60,18 @@ void glShader::printShaderLog( GLuint shader )
 
 		//Get info string length
 		glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &maxLength );
-		LPCSTR ilptr = infoLog;
+		vector<GLchar> infoLog(maxLength,'\0');
+		LPSTR ilptr = &infoLog[0];
 
 		//Get info log
-		glGetShaderInfoLog( shader, maxLength, &infoLogLength, infoLog );
+		glGetShaderInfoLog( shader, maxLength, &infoLogLength, ilptr);
 		if( infoLogLength > 0 )
 		{
 			//Print Log
-			wsprintf(infoLogUnicode,L"%S",infoLog);
+			wsprintf(infoLogUnicode,L"%S",ilptr);
 			infoMessage(infoLogUnicode);
 		}
+		infoLog.clear();
 	}
 	else
 	{
@@ -73,58 +82,59 @@ void glShader::printShaderLog( GLuint shader )
 		glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &maxLength );
 
 		//Allocate string
-		LPSTR infoLog = new CHAR[ maxLength ];
-		LPCSTR ilptr = infoLog;
+		vector<GLchar> infoLog(maxLength,'\0');
+		LPSTR ilptr = &infoLog[0];
 
 		//Get info log
-		glGetShaderInfoLog( shader, maxLength, &infoLogLength, infoLog );
+		glGetShaderInfoLog( shader, maxLength, &infoLogLength, ilptr);
 		if( infoLogLength > 0 )
 		{
 			if(maxLength > 0) {
 				//Print Log
-				wsprintf(infoLogUnicode,L"%S",infoLog);
+				wsprintf(infoLogUnicode,L"%S",ilptr);
 				infoMessage(infoLogUnicode);
 			}
 
 		}
+		infoLog.clear();
 		wsprintf(infoLogUnicode,L"Object %u is not shader",shader);
 		infoMessage(infoLogUnicode);
 	}
 }
-glShader::glShader(HWND _handle):
-	handle(_handle),
-	INFO_MSG_TITLE(L"GL SHADER CLASS")
+glShader::glShader():
+	programID(GL_ZERO),
+	INFO_MSG_TITLE(L"GL SHADER CLASS"),
+	pipeline(GL_ZERO),
+	stagesSet(GL_ZERO),
+	usePipeline(GL_ZERO)
 {
-	str = new WCHAR[256];
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		MessageBox(handle,L"GLEW is not initialized!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
-	}
-	shader_vertexID = shader_fragmentID = programID = NULL;
+	memset(&stages,0,sizeof(GLbitfield));
 }
-glShader::glShader(LPCSTR path_vert, LPCSTR path_frag, HWND _handle) :
-	handle(_handle),
-	INFO_MSG_TITLE(L"GL SHADER CLASS")
+glShader::glShader(const shaderInfo *shaders) :
+	programID(GL_ZERO),
+	INFO_MSG_TITLE(L"GL SHADER CLASS"),
+	pipeline(GL_ZERO),
+	stagesSet(GL_ZERO),
+	usePipeline(GL_ZERO)
 {
-	str = new WCHAR[256];
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		MessageBox(handle,L"GLEW is not initialized!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
-	}
-	loadAndAttach(path_vert,path_frag);
+	memset(&stages,0,sizeof(GLbitfield));
+	loadAndAttach(shaders);
 }
-bool glShader::attachShader(GLuint shID) {
+bool glShader::attachShader(GLuint &shID) {
 	if(shID == NULL) {
 		glDeleteProgram(programID);
 		programID = NULL;
 		return false;
 	}
 	glAttachObjectARB(programID,shID);
+	GLenum error = OGLCheckError(errorString,L"attachShader",1024);
+	if(error > 0) {
+		MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+		return false;
+	}
 	return true;
 }
-GLuint glShader::LoadShader(LPCSTR path, UINT32 type) {
+GLuint glShader::LoadShader(LPCWSTR path, GLenum type) {
 	using namespace std;
 	GLuint shaderID;
 	if(programID != NULL) {
@@ -137,8 +147,12 @@ GLuint glShader::LoadShader(LPCSTR path, UINT32 type) {
 		glCompileShader( shaderID ); //Check shader for errors 
 
 		GLint shaderCompiled = GL_FALSE; 
-		PFNGLGETSHADERIVPROC glGetShaderivOwn = (PFNGLGETSHADERIVPROC) wglGetProcAddress("glGetShaderiv");
-		glGetShaderivOwn( shaderID, GL_COMPILE_STATUS, &shaderCompiled ); 
+		glGetShaderiv( shaderID, GL_COMPILE_STATUS, &shaderCompiled ); 
+		GLint error = OGLCheckError(errorString,L"LoadShader",1024);
+		if(error > 0) {
+			MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+			return 0;
+		}
 		if( shaderCompiled != GL_TRUE ) { 
 			wsprintf(str,L"Unable to compile shader %d!\n\nSource:\n%S\n", shaderID, shaderSource ); 
 			infoMessage(str);
@@ -154,7 +168,7 @@ GLuint glShader::LoadShader(LPCSTR path, UINT32 type) {
 	}
 	return shaderID;
 }
-char* glShader::loadFromFile(LPCSTR path) {
+char* glShader::loadFromFile(LPCWSTR path) {
 	const size_t blockSize = 512;
 	FILE *fp;
 	char buf[blockSize];
@@ -162,7 +176,7 @@ char* glShader::loadFromFile(LPCSTR path) {
 	size_t tmp, sourceLength = 0;
 
 	/* open file */
-	fp = fopen(path, "r");
+	fp = _wfopen(path, L"r");
 	if(!fp) {
 		return NULL;
 	}
@@ -187,48 +201,118 @@ char* glShader::loadFromFile(LPCSTR path) {
 		source[sourceLength] = '\0';
 	return source;
 }
+void glShader::setProgramParameteri(GLenum name, GLint val) {
+	if(name == GL_PROGRAM_SEPARABLE && val != GL_ZERO) {
+		usePipeline = true;
+		glGenProgramPipelines(1,&pipeline);
+	}
+	glProgramParameteri(programID,name,val);
+}
+void glShader::setPipelineStages(GLbitfield inStages) {
+	if(usePipeline) {
+		glUseProgramStages(pipeline,inStages,programID);
+		stagesSet = true;
+	}
+}
 GLboolean glShader::useProgram() {
 	//Use shader
-	glUseProgram(programID);
-
+	if(usePipeline && stagesSet) {
+		glBindProgramPipeline(pipeline);
+	}
+	else {
+		glUseProgram(programID);
+	}
 	//Check for error
-	GLenum error = glGetError();
+	GLenum error = OGLCheckError(errorString,L"useProgram",1024);
+			if(error > 0) {
+				MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+				return 0;
+			}
 	if( error != GL_NO_ERROR )
 	{
 		wsprintf(str,L"Error binding shader! %S\n", gluErrorString( error ) );
-		printProgramLog(programID);
+		printProgramLog();
 		return false;
 	}
 	return true;
 }
-GLuint glShader::loadAndAttach(LPCSTR path_vert, LPCSTR path_frag) {
-	if(programID == NULL)
-		programID = glCreateProgramObjectARB(); // create GLSL program
-	shader_vertexID = LoadShader(path_vert,GLSL_VERTEX);
-	if(attachShader(shader_vertexID)) {
-		shader_fragmentID = LoadShader(path_frag,GLSL_FRAGMENT);
-		if(attachShader(shader_fragmentID)) {
-			//Check for errors
-			glLinkProgram(programID);
-			GLint programSuccess = GL_TRUE;
-			glGetProgramiv( programID, GL_LINK_STATUS, &programSuccess );
-			if( programSuccess != GL_TRUE )
-			{
-				printf( "Error linking program %d!\n", programID );
-				printProgramLog( programID );
-				glDeleteProgram( programID );
-				programID = NULL;
-				return -1;
+bool glShader::link(GLuint *getProgID) {
+	GLint param;
+	if(!stagesSet && usePipeline) {
+		stages = 0;
+		for(vector<GLuint>::iterator i = shaderList.begin(); i != shaderList.end(); i++) {
+			if(glIsShader(*i)) {
+				glGetShaderiv(*i,GL_SHADER_TYPE,&param);
+				switch(param) {
+				case GL_VERTEX_SHADER:
+					stages |= GL_VERTEX_SHADER_BIT;
+					break;
+				case GL_FRAGMENT_SHADER:
+					stages |= GL_FRAGMENT_SHADER_BIT;
+					break;
+				case GL_TESS_CONTROL_SHADER:
+					stages |= GL_TESS_CONTROL_SHADER_BIT;
+					break;
+				case GL_TESS_EVALUATION_SHADER:
+					stages |=  GL_TESS_EVALUATION_SHADER_BIT;
+					break;
+				case GL_COMPUTE_SHADER:
+					stages |= GL_COMPUTE_SHADER_BIT;
+					break;
+				}
 			}
-			return programID;
+			else {
+				return false;
+			}
 		}
+		glUseProgramStages(pipeline,stages,programID);
 	}
-	return -1;
+	glLinkProgram(programID);
+	GLint programSuccess = GL_TRUE;
+	glGetProgramiv( programID, GL_LINK_STATUS, &programSuccess );
+	if( programSuccess != GL_TRUE )
+	{
+		printf( "Error linking program %d!\n", programID );
+		printProgramLog();
+		glDeleteProgram(programID);
+		programID = NULL;
+		return false;
+	}
+	if(getProgID != NULL)
+		*getProgID = programID;
+	return true;
+}
+bool glShader::loadAndAttach(const shaderInfo *shaders) {
+	bool globRes = true;
+	if(programID == NULL)
+		programID = glCreateProgram(); // create GLSL program
+	GLenum error = OGLCheckError(errorString,L"loadAndAttach",1024);
+			if(error > 0) {
+				MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+				return 0;
+			}
+	GLuint currentShader;
+	GLint i = 0;
+	while(globRes && shaders[i].sType != GLSL_NONE) {
+		currentShader = LoadShader(shaders[i].path,shaders[i].sType);
+		if(!attachShader(currentShader)) 
+			globRes = false;
+		else 
+			shaderList.push_back(currentShader);
+		i++;
+	}
+	return globRes;
+}
+void glShader::bindFragDataOutput(const GLchar *outName) const {
+	glBindFragDataLocation(programID,0,outName);
 }
 glShader::~glShader(void)
 {
-	delete[] str;
-	glDeleteShader(shader_vertexID);
-	glDeleteShader(shader_fragmentID);
+	for(vector<GLuint>::reverse_iterator i = shaderList.rbegin(); i != shaderList.rend(); i++) {
+		glDetachShader(programID,*i);
+		glDeleteShader(*i);
+	}
+	shaderList.clear();
 	glDeleteProgram(programID);
+	glDeleteProgramPipelines(1,&pipeline);
 }

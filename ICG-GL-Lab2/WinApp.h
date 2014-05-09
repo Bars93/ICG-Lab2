@@ -4,35 +4,50 @@
 #define WINAPP_H
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h> 
-#include <windowsx.h>
+#include <windowsx.h> // Extended windows defenisions
 #include <CommCtrl.h>
 #include <wchar.h> // for UNICODE characters functions
-#include "WinCtrl.h"
+#include "glCtrl.h"
 class WinApp
 {
 	int width, height;
 	int x,y;
-	HWND handle, parentHandle, hBtnState;
+	HWND handle, hBtnState;
+	HDC winDC;
+	DEVMODE dmSettings;
+	HANDLE AppMutex;
 	HMENU menuHandle;
 	HINSTANCE hInst;
-	bool fullscreen;
+	bool winActive;
 	LPCWSTR szWinClassName;
 	LPCWSTR szTitle;
-	WinCtrl *lpCtrl;
+	glCtrl ctrl;
+
+	long int lastframeTime;
+	float lastframeIval;
 	void ErrorMessage(LPCWSTR text);
-	ATOM WINAPI RegWindow();
+	ATOM WINAPI RegWindowClass();
+	void WINAPI UnRegWindowClass();
+	bool RecreateWindow();
+	void SetToDesktopCenter();
 	HICON loadIcon(INT id);
 	HCURSOR loadCursor(INT id);
 public:
-	WinApp(int _w, int _h,WinCtrl *ctrl,LPCWSTR szAppTitle, LPCWSTR szClassName,bool fs, HWND hParent,HINSTANCE _hInst);
+	WinApp(INT wWidth, INT wHeight,LPCWSTR szAppTitle, LPCWSTR szClassName,HINSTANCE _hInst);
+	bool InitMutex();
+	LRESULT CALLBACK WndProcINT(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	~WinApp(void);
-	bool createWindow(DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, DWORD dwExStyle = WS_EX_APPWINDOW);
+	bool createWindow();
 	void showWindow(int cmdShow);
+	void mainLoop(MSG *msg);
 	/*get functions */
 	void get_AppName(LPWSTR out, int sz) {
 		wcsncpy(out,szWinClassName,sz);
 	}
 	HWND getHandle() { return handle; }
+		void resetTimer();
+	void updateTimer();
+	void refresh();
 };
 
 #endif

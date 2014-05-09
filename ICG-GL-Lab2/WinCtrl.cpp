@@ -23,7 +23,7 @@ inline int WinCtrl::rButtonUp(WPARAM wParam, int x, int y) { return 0; }
 inline int WinCtrl::size(int w, int h, WPARAM type) { return 0; }
 inline int WinCtrl::timer(WPARAM id, LPARAM lParam) { return 0; }
 inline int WinCtrl::vScroll(WPARAM wParam, LPARAM lParam) { return 0; }
-
+inline int WinCtrl::wActivate(int aCmd,int minimized, HWND hWnd) { return 0; }
 WinCtrl::WinCtrl() : handle(0)
 {
 }

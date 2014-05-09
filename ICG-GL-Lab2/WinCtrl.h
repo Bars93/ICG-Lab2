@@ -8,7 +8,7 @@
 class WinCtrl
 {
 protected:
-	HWND handle; 
+	HWND handle;
 private:
 	ULONG32 MOUSE_X, MOUSE_Y;
 public:
@@ -35,12 +35,10 @@ public:
 	virtual int size(int w, int h, WPARAM wParam);          // for WM_SIZE: width, height, type(SIZE_MAXIMIZED...)
 	virtual int timer(WPARAM id, LPARAM lParam);            // for WM_TIMER: ID, ptr to callback ftn
 	virtual int vScroll(WPARAM wParam, LPARAM lParam);      // for WM_VSCROLL
+	virtual int wActivate(int aCmd,int minimized, HWND hWnd);
 	WinCtrl(void);
 	~WinCtrl(void);
-	/*Set functions*/
-	void setHandle(HWND handle);                            // set window handle
 	/*get functions*/
 };
-inline void WinCtrl::setHandle(HWND hwnd) { handle = hwnd; }
 #endif
 #endif

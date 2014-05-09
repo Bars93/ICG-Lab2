@@ -1,95 +1,84 @@
 #include "glCtrl.h"
 #include "resource.h"
 #include "controlDefs.h"
-glCtrl::glCtrl(glView* view,glModel* model) : modelGL(model), viewGL(view),
-	threadHandle(0), threadId(0),
-	clientWidth(0), clientHeight(0)
-{
+#include <ctime>
+glCtrl::glCtrl() : clientWidth(0), clientHeight(0), GLinit(false), iCurrentFPS(0), iFPScount(0) {
+
 }
 int glCtrl::close()
 {
-	//::WaitForSingleObject(threadHandle, INFINITE);  // wait for rendering thread is terminated
-
 	// close OpenGL Rendering context
-	viewGL->closeContext(handle);
-
-	::DestroyWindow(handle);
+	viewGL.closeContext(handle);
 	return 0;
 }
 int glCtrl::destroy()
 {
-	::PostQuitMessage(0);       // exit the message loop
+	viewGL.closeContext(handle);
+	PostQuitMessage(0);       // exit the message loop
 	return 0;
 }
 int glCtrl::mouseWheel(int state, int d, int x, int y) {
-	modelGL->zoomCamera(d);
+	modelGL.zoomCamera(d);
 	return 0;
 }
 int glCtrl::create()
 {
+	return 0;
+}
+int glCtrl::initOpenGL(HDC *hdc,HWND *handle, HINSTANCE *hInst) {
+	this->handle = *handle;
 	// create a OpenGL rendering context
-	if(!viewGL->createContext(handle, 32, 24, 0, OGL_V21))
+	if(!viewGL.initGLEW(hInst))
+		return -1;
+	if(!viewGL.createContext(handle,hdc, 32, 24, 8,4,3))
 	{
-		//Win::log(L"[ERROR] Failed to create OpenGL rendering context from glCtrl::create().");
 		return -1;
 	}
-	modelGL->setWinHandle(handle); // for Error messaging
-
-	// create a thread for OpenGL rendering
-	// The params of _beginthreadex() are security, stackSize, functionPtr, argPtr, initFlag, threadId.
-	//threadHandle = (HANDLE)_beginthreadex(0, 0, (unsigned (__stdcall *)(void *))threadFunction, this, 0, &threadId);
-	//if(threadHandle)
-	//{
-	//	loopFlag = true;
-	//	//Win::log(L"Created a rendering thread for OpenGL.");
-	//}
-	//else
-	//{
-	//	//Win::log(L"[ERROR] Failed to create rendering thread from glCtrl::create().");
-	//}
-	//loopFlag = true;
-	//runThread();
-
-	// initialize OpenGL states
-	if(!modelGL->init()) {
-		return -1;
-	}
-
+	curHostInfo = viewGL.getHostInfo();
+	
+	modelGL.setWinHandle(*handle); // for Error messaging
+	modelGL.setDevContext(*hdc);
 	// configure projection matrix and camera
 	RECT rect;
-	::GetClientRect(handle, &rect);
-	modelGL->setViewport(rect.right, rect.bottom);
-	// rendering loop
-
-	modelGL->draw();
-	viewGL->swapBuffers();
-	InvalidateRect(handle,NULL,FALSE);
+	GetClientRect(*handle, &rect);	
+	modelGL.setViewport(rect.right, rect.bottom);
+	// initialize OpenGL states
+	if(!modelGL.init()) {
+		return -1;
+	}
+	GLinit = true;
 	return 0;
 }
 int glCtrl::paint()
 {
-	PAINTSTRUCT ps;
+	if(GLinit) {
+		BYTE Keys = 0x00;
+		if(GetKeyState('W') & 0x80) Keys |= 0x01;
+		if(GetKeyState('S') & 0x80) Keys |= 0x02;
+		if(GetKeyState('A') & 0x80) Keys |= 0x04;
+		if(GetKeyState('D') & 0x80) Keys |= 0x08;
+		if(GetKeyState('R') & 0x80) Keys |= 0x10;
+		if(GetKeyState('F') & 0x80) Keys |= 0x20;
 
-	HDC hDC = BeginPaint(handle, &ps);
-	ValidateRect(handle,FALSE);
-	BYTE Keys = 0x00;
-	if(GetKeyState('W') & 0x80) Keys |= 0x01;
-	if(GetKeyState('S') & 0x80) Keys |= 0x02;
-	if(GetKeyState('A') & 0x80) Keys |= 0x04;
-	if(GetKeyState('D') & 0x80) Keys |= 0x08;
-	if(GetKeyState('R') & 0x80) Keys |= 0x10;
-	if(GetKeyState('F') & 0x80) Keys |= 0x20;
-
-	if(GetKeyState(VK_SHIFT) & 0x80) Keys |= 0x40;
-	if(GetKeyState(VK_CONTROL) & 0x80) Keys |= 0x80;
-	modelGL->moveCameraByKB(Keys);
-	modelGL->draw();
-	viewGL->swapBuffers();
-	EndPaint(handle,&ps);
+		if(GetKeyState(VK_SHIFT) & 0x80) Keys |= 0x40;
+		if(GetKeyState(VK_CONTROL) & 0x80) Keys |= 0x80;
+		modelGL.moveCameraByKB(Keys);
+		long int currentClock = clock();
+		long int iVal = currentClock - lastSecond;
+		if((iVal) >= CLOCKS_PER_SEC)
+		{
+			lastSecond = currentClock;
+			iFPScount = GLfloat(iCurrentFPS) / (GLfloat(iVal) / GLfloat(CLOCKS_PER_SEC));
+			iCurrentFPS = 0;
+		}
+		modelGL.draw();
+		iCurrentFPS++;
+	}
 	return 0;
 }
 int glCtrl::command(int id, int cmd, LPARAM msg)
 {
+	WCHAR *str;
 	switch(id) {
 	case ID_MENU_EXIT:
 		if(MessageBox(handle,L"Уже уходите?",L"ICG GL Lab2", MB_YESNO | MB_ICONQUESTION) == IDYES) {
@@ -97,28 +86,51 @@ int glCtrl::command(int id, int cmd, LPARAM msg)
 		}
 		break;
 	case ID_MENU_LOADDATA:
-		// Add load func call
+		// Add load func 
+		modelGL.loadFileData();
+		modelGL.initBuffers();
+		modelGL.checkReadyToDraw();
 		break;
 	case ID_MENU_TECHDATA:
-
+		str = new WCHAR[1024];
+		swprintf(str,2048,L"Vendor: %S\nRenderer: %S\nOpenGL Version: %S\nGLSL version: %S\nSupported Extensions (num): %d",
+			curHostInfo->vendor,curHostInfo->renderer,curHostInfo->GLversion,curHostInfo->GLSLversion,curHostInfo->numExts);
+		MessageBox(handle,str,L"Technical Data",MB_OK | MB_ICONINFORMATION);
+		delete[] str;
 		break;
 	case ID_MENU_ABOUT:
-
+		
 		break;
 	case IDC_BUTTON_LIGHT:
-		modelGL->changeLight();
+		modelGL.changeLight();
+
 		break;
 	}
 	return 0;
 }
+int glCtrl::wActivate(int aCmd,int minimized, HWND hWnd) {
+	int globRes = -1;
+	switch(aCmd) {
+	case WA_ACTIVE:
+	case WA_CLICKACTIVE:
+		//resetTimer;
+		globRes = 1;
+		break;
+	case WA_INACTIVE:
+		globRes = 0;
+		break;
+	}
+	return globRes;
+}
 int glCtrl::lButtonDown(WPARAM state, int x, int y)
 {
 	// update mouse position
-	modelGL->setMousePosition(x, y);
+	modelGL.setMousePosition(x, y);
 
 	if(state == MK_LBUTTON)
 	{
-		modelGL->setMouseLeft(true);
+		modelGL.setMouseLeft(true);
+
 	}
 
 	return 0;
@@ -132,9 +144,9 @@ int glCtrl::lButtonDown(WPARAM state, int x, int y)
 int glCtrl::lButtonUp(WPARAM state, int x, int y)
 {
 	// update mouse position
-	modelGL->setMousePosition(x, y);
+	modelGL.setMousePosition(x, y);
 
-	modelGL->setMouseLeft(false);
+	modelGL.setMouseLeft(false);
 
 	return 0;
 }
@@ -147,11 +159,11 @@ int glCtrl::lButtonUp(WPARAM state, int x, int y)
 int glCtrl::rButtonDown(WPARAM state, int x, int y)
 {
 	// update mouse position
-	modelGL->setMousePosition(x, y);
+	modelGL.setMousePosition(x, y);
 
 	if(state == MK_RBUTTON)
 	{
-		modelGL->setMouseRight(true);
+		modelGL.setMouseRight(true);
 	}
 
 	return 0;
@@ -165,9 +177,9 @@ int glCtrl::rButtonDown(WPARAM state, int x, int y)
 int glCtrl::rButtonUp(WPARAM state, int x, int y)
 {
 	// update mouse position
-	modelGL->setMousePosition(x, y);
+	modelGL.setMousePosition(x, y);
 
-	modelGL->setMouseRight(false);
+	modelGL.setMouseRight(false);
 
 	return 0;
 }
@@ -181,8 +193,7 @@ int glCtrl::mouseMove(WPARAM state, int x, int y)
 {
 	if(state == MK_LBUTTON)
 	{
-		modelGL->rotateCamera(x, y);
-
+		modelGL.rotateCamera(x, y);
 	}	
 	return 0;
 }
@@ -194,10 +205,18 @@ int glCtrl::mouseMove(WPARAM state, int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 int glCtrl::keyDown(int key, LPARAM lParam)
 {
-	if(key == VK_ESCAPE)
-	{
-		::PostMessage(handle, WM_CLOSE, 0, 0);
+	switch(key) {
+	case VK_ESCAPE:
+		if(MessageBox(handle,L"Уже уходите?",L"ICG GL Lab2", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+			PostQuitMessage(EXIT_SUCCESS);
+		}
+		break;
+	case 0x4E: 
+		// 'N' key virtual code http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
+		modelGL.changeShowNormals();
+		break;
 	}
+
 	return 0;
 }
 
@@ -212,10 +231,10 @@ int glCtrl::size(int width, int height, WPARAM type)
 {
 	clientWidth = width;
 	clientHeight = height;
-	modelGL->setViewport(width,height);
+	modelGL.setViewport(width,height);
+
 	return 0;
 }
-
 
 glCtrl::~glCtrl(void)
 {

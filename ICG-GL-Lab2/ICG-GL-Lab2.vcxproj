@@ -41,9 +41,17 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <TargetName>$(ProjectName)_$(Platform)[DEBUG]</TargetName>
+    <IncludePath>$(SolutionDir)\glew\include\;$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)tmp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\</OutDir>
+    <TargetName>$(ProjectName)_$(Platform)[RELEASE]</TargetName>
+    <IncludePath>$(SolutionDir)\glew\include\;$(IncludePath)</IncludePath>
+    <IntDir>$(SolutionDir)tmp\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -53,10 +61,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalOptions>/D "IRBIS_GLFW_DBG_MODE" %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;comctl32.lib;glew32sd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>glew32sd.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -72,16 +84,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)\lib\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;comctl32.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>glew32s.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="clComputing.cpp" />
     <ClCompile Include="glCtrl.cpp" />
     <ClCompile Include="glModel.cpp" />
     <ClCompile Include="glShader.cpp" />
@@ -94,13 +109,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="clComputing.h" />
     <ClInclude Include="controlDefs.h" />
     <ClInclude Include="glCtrl.h" />
     <ClInclude Include="glHeaders.h" />
     <ClInclude Include="glModel.h" />
     <ClInclude Include="glShader.h" />
     <ClInclude Include="glView.h" />
+    <ClInclude Include="IrbisGLminiFW.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="WinProc.h" />
     <ClInclude Include="WinApp.h" />
@@ -109,12 +124,21 @@
   <ItemGroup>
     <None Include="shaders\ICG-Lab2.frag" />
     <None Include="shaders\ICG-Lab2.vert" />
+    <None Include="shaders\ICG-Lab2_with_lighting.frag" />
+    <None Include="shaders\ICG-Lab2_with_lighting.vert" />
+    <None Include="shaders\NormalsDraw.frag" />
+    <None Include="shaders\NormalsDraw.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="opengl.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ICG-GL-Lab2_resources.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\glew\build\vc10\glew_static.vcxproj">
+      <Project>{664e6f0d-6784-4760-9565-d54f8eb1edf4}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

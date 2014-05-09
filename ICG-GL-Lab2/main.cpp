@@ -1,24 +1,20 @@
 #include <Windows.h> 
-#include "WinApp.h"
-#include "glCtrl.h"
-#pragma comment(lib, "opengl32.lib")
-#pragma comment(lib, "glu32.lib")
-#pragma comment(lib, "glew32.lib")
-int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) 
+#include "IrbisGLminiFW.h"
+
+
+int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE, LPSTR, int) 
 { 
-	glModel model;
-	glView view;
-	glCtrl glctrl(&view,&model);
-	WinApp glWin(1000,600,&glctrl,L"ICG GL Lab2", L"ICG-GL-Lab2",false,0,hInstance);
-	if(glWin.createWindow(WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE,WS_EX_APPWINDOW)) {
-		glWin.showWindow(SW_SHOWNORMAL);
-		MSG msg;
-		while(GetMessage(&msg, NULL, 0, 0) != NULL ) 
-		{ 
-			TranslateMessage(&msg); 
-			DispatchMessage(&msg); 
-		} 
-		return msg.wParam;  
+	const int wWidth = 800;
+	const int wHeight = 600;
+	WinApp App(wWidth,wHeight,L"ICG GL Lab2", L"ICG-GL-Lab2",hInstance);
+	AppPtr = &App; // Should init global ptr for WndProc connection
+	MSG msg = {0};
+	if(App.InitMutex() && App.createWindow()) {
+		App.showWindow(SW_SHOWNORMAL);
+		App.mainLoop(&msg);
 	}
-	return -1;
+	else {
+		msg.wParam = -1;
+	}
+	return msg.wParam;
 } 

@@ -13,6 +13,10 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\FragmentShaders">
+      <UniqueIdentifier>{3021cee7-8366-4876-8fa7-94f4195de592}</UniqueIdentifier>
+      <Extensions>*.frag</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -37,9 +41,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="glShader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="clComputing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,22 +69,34 @@
     <ClInclude Include="glHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="clComputing.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="controlDefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IrbisGLminiFW.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\NormalsDraw.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\NormalsDraw.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\ICG-Lab2_with_lighting.vert">
+      <Filter>Resource Files</Filter>
+    </None>
     <None Include="shaders\ICG-Lab2.frag">
-      <Filter>Source Files</Filter>
+      <Filter>Resource Files</Filter>
     </None>
     <None Include="shaders\ICG-Lab2.vert">
-      <Filter>Source Files</Filter>
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\ICG-Lab2_with_lighting.frag">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

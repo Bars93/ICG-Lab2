@@ -1,6 +1,7 @@
 #ifndef WINPROC_H
 #define WINPROC_H
 #include <Windows.h>
-
-LONG WINAPI mainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#include "WinApp.h"
+extern WinApp *AppPtr;
+LRESULT CALLBACK WndProcEXT(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 #endif

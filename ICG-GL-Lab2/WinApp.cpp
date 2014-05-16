@@ -4,10 +4,10 @@
 #include "resource.h"
 #include "controlDefs.h"
 #include <ctime>
-const DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_VISIBLE;
-const DWORD dwStyleEx = WS_EX_APPWINDOW;
+const DWORD dwStyle = WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
+const DWORD dwStyleEx = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;
 const DWORD dwFSStyle = WS_POPUP | WS_CLIPSIBLINGS | WS_CLIPCHILDREN;
-const DWORD dwFSStyleEx = NULL;
+const DWORD dwFSStyleEx = WS_EX_APPWINDOW;
 HICON WinApp::loadIcon(int id)
 {
 	return (HICON)::LoadImage(hInst, MAKEINTRESOURCE(id), IMAGE_ICON, 0, 0, LR_DEFAULTSIZE);
@@ -29,7 +29,8 @@ WinApp::WinApp(INT wWidth, INT wHeight,LPCWSTR szAppTitle,LPCWSTR szClassName, H
 	szTitle(szAppTitle),
 	hInst(_hInst),
 	winDC(NULL),
-	winActive(true)
+	winActive(true),
+	fullscreen(false)
 {
 	ZeroMemory(&dmSettings,sizeof(DEVMODE));
 	EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&dmSettings);
@@ -51,7 +52,7 @@ ATOM WINAPI WinApp::RegWindowClass() {
 	WCE.hCursor       = LoadCursor (NULL,IDC_ARROW); 
 	WCE.lpszClassName = szWinClassName;
 	WCE.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
-	WCE.hbrBackground = (HBRUSH)GetSysColor(COLOR_BACKGROUND);
+	//WCE.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 	globRes = RegisterClassEx(&WCE);
 	if(!globRes) {
 		ErrorMessage(L"Error register window class!");
@@ -75,12 +76,22 @@ bool WinApp::createWindow() {
 		InitCtrls.dwICC = ICC_WIN95_CLASSES; //для контролов
 		InitCommonControlsEx(&InitCtrls); //для контролов
 		if((MessageBox(handle,L"Запустить полноэкранный режим?",szTitle, MB_YESNO | MB_ICONQUESTION)) == IDYES) {
-			if(winDC == NULL)
-				winDC = GetDC(handle);
-			width = dmSettings.dmPelsWidth;
-			height = dmSettings.dmPelsHeight;
+			/*if(ChangeDisplaySettings(&dmSettings,CDS_FULLSCREEN) !=DISP_CHANGE_SUCCESSFUL) {
+				if(MessageBox(handle,L"Полноэкранный режим не доступен, продолжить в обычном?",szTitle, MB_YESNO | MB_ICONEXCLAMATION) == IDYES) {
+					fullscreen = false;
+				}
+				else {
+					return false;
+				}
+			}
+			else {*/
+				fullscreen = true;
+				width = dmSettings.dmPelsWidth;
+				height = dmSettings.dmPelsHeight;
+			/*}*/
+		}
+		if(fullscreen) {
 			handle = CreateWindowEx(dwFSStyleEx,szWinClassName,szTitle,dwFSStyle,0,0,width,height,NULL,(HMENU)menuHandle,hInst,(LPVOID)NULL);
-
 		}
 		else {
 			handle = CreateWindowEx(dwStyleEx,szWinClassName,szTitle,dwStyle,x,y,width,height,NULL,(HMENU)menuHandle,hInst,(LPVOID)NULL);
@@ -90,13 +101,16 @@ bool WinApp::createWindow() {
 			ErrorMessage(L"Error window creation");
 		}
 		if(globRes) {
-			if(winDC == NULL)
-				winDC = GetDC(handle);
+			winDC = GetDC(handle);
 			if(ctrl.initOpenGL(&winDC,&handle,&hInst) < 0) {
 				globRes = false;
 			}
-			hBtnState = CreateWindowEx(NULL,L"BUTTON",L"Освещение",WS_CHILD | WS_VISIBLE, width - 150,10,100,20,handle,(HMENU)IDC_BUTTON_LIGHT,hInst,(LPVOID)0);
-			if(!hBtnState) {
+			//hBtnState = CreateWindowEx(NULL,L"BUTTON",L"Освещение",WS_CHILD | WS_VISIBLE, width - 170,10,140,25,handle,(HMENU)IDC_BUTTON_LIGHT,hInst,(LPVOID)0);
+			hCBLighting = CreateWindowEx(NULL,WC_BUTTON,L"Освещение", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 175,10,170,15,handle,(HMENU)IDC_CB_LIGHTING,hInst,(LPVOID)0);
+			hCBShowNormals = CreateWindowEx(NULL,WC_BUTTON,L"Отобразить нормали", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 175,30,170,15,handle,(HMENU)IDC_CB_SHOWNORMALS,hInst,(LPVOID)0);
+			hCBWireframe  = CreateWindowEx(NULL,WC_BUTTON,L"Wireframe", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 175,50,170,15,handle,(HMENU)IDC_CB_WIREFRAME,hInst,(LPVOID)0);
+			CheckDlgButton(hCBLighting,IDC_CB_SHOWNORMALS, BST_CHECKED);
+			if(!hCBLighting) {
 				globRes = false;
 				ErrorMessage(L"Button creation failed");
 			}
@@ -131,7 +145,7 @@ void WinApp::mainLoop(MSG *msg) {
 			//timerUpdate
 			updateTimer();
 			ctrl.paint();
-			swprintf(newSzTitle,256,L"ICG GL Lab-2. FPS - %.2f.Timer - %.4f.",ctrl.getFPS(),this->lastframeIval);
+			swprintf(newSzTitle,256,L"ICG GL Lab-2. FPS - %.2f.",ctrl.getFPS(),this->lastframeIval);
 			SetWindowText(handle,newSzTitle);
 		}
 		else {
@@ -151,6 +165,9 @@ LRESULT CALLBACK WinApp::WndProcINT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 		break;
 
 	case WM_SIZE:
+		MoveWindow(hCBLighting,LOWORD(lParam)-175,10,170,15,true);
+		MoveWindow(hCBShowNormals,LOWORD(lParam)-175,30,170,15,true);
+		MoveWindow(hCBWireframe,LOWORD(lParam)-175,50,170,15,true);
 		returnValue = ctrl.size(LOWORD(lParam), HIWORD(lParam), (int)wParam);    // width, height, type
 		break;
 
@@ -166,7 +183,7 @@ LRESULT CALLBACK WinApp::WndProcINT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 		static PAINTSTRUCT ps;
 		BeginPaint(hwnd,&ps);
 		EndPaint(hwnd,&ps);
-		InvalidateRect( hwnd, NULL, FALSE );
+		//InvalidateRect( hwnd, NULL, FALSE );
 		returnValue = DefWindowProc(hwnd, msg, wParam, lParam);
 		break;
 	case WM_NCPAINT:  /* 0x0085 */
@@ -175,7 +192,7 @@ LRESULT CALLBACK WinApp::WndProcINT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 		/* Pass it on to "DefWindowProc" to repaint a standard border */
 		break;
 	case WM_COMMAND:
-		returnValue = ctrl.command(LOWORD(wParam), HIWORD(wParam), lParam);   // id, code, msg
+		returnValue = ctrl.command(hwnd,LOWORD(wParam), HIWORD(wParam), lParam);   // id, code, msg
 		break;
 
 	case WM_MOUSEMOVE:
@@ -279,8 +296,9 @@ void WinApp::showWindow(int cmdShow) {
 	if(handle) {
 		ShowWindow(handle, cmdShow);
 		UpdateWindow(handle);
-		RedrawWindow(handle,NULL,NULL,RDW_NOERASE | RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_UPDATENOW);
-		SetActiveWindow(handle);
+		//RedrawWindow(handle,NULL,NULL,RDW_NOERASE | RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_UPDATENOW);
+		SetForegroundWindow(handle);
+		SetFocus(handle);
 	}
 }
 WinApp::~WinApp(void)

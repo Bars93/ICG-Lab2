@@ -35,17 +35,18 @@ int glCtrl::initOpenGL(HDC *hdc,HWND *handle, HINSTANCE *hInst) {
 		return -1;
 	}
 	curHostInfo = viewGL.getHostInfo();
-	
+
 	modelGL.setWinHandle(*handle); // for Error messaging
 	modelGL.setDevContext(*hdc);
+	if(!modelGL.init()) {
+		return -1;
+	}
 	// configure projection matrix and camera
 	RECT rect;
 	GetClientRect(*handle, &rect);	
 	modelGL.setViewport(rect.right, rect.bottom);
 	// initialize OpenGL states
-	if(!modelGL.init()) {
-		return -1;
-	}
+
 	GLinit = true;
 	return 0;
 }
@@ -76,9 +77,10 @@ int glCtrl::paint()
 	}
 	return 0;
 }
-int glCtrl::command(int id, int cmd, LPARAM msg)
+int glCtrl::command(HWND hwnd,int id, int cmd, LPARAM msg)
 {
 	WCHAR *str;
+	BOOL checked;
 	switch(id) {
 	case ID_MENU_EXIT:
 		if(MessageBox(handle,L"Уже уходите?",L"ICG GL Lab2", MB_YESNO | MB_ICONQUESTION) == IDYES) {
@@ -99,12 +101,42 @@ int glCtrl::command(int id, int cmd, LPARAM msg)
 		delete[] str;
 		break;
 	case ID_MENU_ABOUT:
-		
-		break;
-	case IDC_BUTTON_LIGHT:
-		modelGL.changeLight();
 
 		break;
+	case IDC_CB_WIREFRAME:
+		checked = IsDlgButtonChecked(hwnd,IDC_CB_WIREFRAME);
+		if(checked) {
+			CheckDlgButton(hwnd,IDC_CB_WIREFRAME,BST_UNCHECKED);
+			modelGL.changeShowMode(0);
+		}
+		else {
+			CheckDlgButton(hwnd,IDC_CB_WIREFRAME,BST_CHECKED);
+			modelGL.changeShowMode(1);
+		}
+		break;
+	case IDC_CB_LIGHTING:
+		checked = IsDlgButtonChecked(hwnd,IDC_CB_LIGHTING);
+		if(checked) {
+			CheckDlgButton(hwnd,IDC_CB_LIGHTING,BST_UNCHECKED);
+			modelGL.changeLight(0);
+		}
+		else {
+			CheckDlgButton(hwnd,IDC_CB_LIGHTING,BST_CHECKED);
+			modelGL.changeLight(1);
+		}
+		break;
+	case IDC_CB_SHOWNORMALS:
+		checked = IsDlgButtonChecked(hwnd,IDC_CB_SHOWNORMALS);
+		if(checked) {
+			CheckDlgButton(hwnd,IDC_CB_SHOWNORMALS,BST_UNCHECKED);
+			modelGL.changeShowNormals(0);
+		}
+		else {
+			CheckDlgButton(hwnd,IDC_CB_SHOWNORMALS,BST_CHECKED);
+			modelGL.changeShowNormals(1);
+		}
+		break;
+
 	}
 	return 0;
 }
@@ -191,10 +223,7 @@ int glCtrl::rButtonUp(WPARAM state, int x, int y)
 ///////////////////////////////////////////////////////////////////////////////
 int glCtrl::mouseMove(WPARAM state, int x, int y)
 {
-	if(state == MK_LBUTTON)
-	{
-		modelGL.rotateCamera(x, y);
-	}	
+	modelGL.rotateCamera(x, y);
 	return 0;
 }
 
@@ -210,10 +239,6 @@ int glCtrl::keyDown(int key, LPARAM lParam)
 		if(MessageBox(handle,L"Уже уходите?",L"ICG GL Lab2", MB_YESNO | MB_ICONQUESTION) == IDYES) {
 			PostQuitMessage(EXIT_SUCCESS);
 		}
-		break;
-	case 0x4E: 
-		// 'N' key virtual code http://msdn.microsoft.com/en-us/library/windows/desktop/dd375731%28v=vs.85%29.aspx
-		modelGL.changeShowNormals();
 		break;
 	}
 

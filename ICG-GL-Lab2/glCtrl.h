@@ -19,7 +19,7 @@ public:
 	glCtrl(glView *view, glModel *model);
 	~glCtrl(void);
 	int close();                                // close the RC and destroy OpenGL window
-	int command(int id, int cmd, LPARAM msg);   // for WM_COMMAND
+	int command(HWND hwnd,int id, int cmd, LPARAM msg);   // for WM_COMMAND
 	int create();                               // create RC for OpenGL window and start new thread for rendering
 	int initOpenGL(HDC *hdc,HWND *handle, HINSTANCE *hInst);
 	int destroy();

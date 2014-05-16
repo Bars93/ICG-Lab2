@@ -10,9 +10,13 @@
 #include "glCtrl.h"
 class WinApp
 {
+	bool fullscreen;
 	int width, height;
 	int x,y;
 	HWND handle, hBtnState;
+	// combo boxes handles
+	HWND hCBLighting, hCBTess, hCBShowNormals, hCBWireframe, hTBTessLevel;
+	HWND hSTMSAA;
 	HDC winDC;
 	DEVMODE dmSettings;
 	HANDLE AppMutex;

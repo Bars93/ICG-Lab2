@@ -216,28 +216,8 @@ void glShader::setPipelineStages(GLbitfield inStages) {
 }
 GLboolean glShader::useProgram() {
 	//Use shader
-	if(usePipeline && stagesSet) {
-		glBindProgramPipeline(pipeline);
-	}
-	else {
-		glUseProgram(programID);
-	}
-	//Check for error
-	GLenum error = OGLCheckError(errorString,L"useProgram",1024);
-			if(error > 0) {
-				MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
-				return 0;
-			}
-	if( error != GL_NO_ERROR )
-	{
-		wsprintf(str,L"Error binding shader! %S\n", gluErrorString( error ) );
-		printProgramLog();
-		return false;
-	}
-	return true;
-}
-bool glShader::link(GLuint *getProgID) {
-	GLint param;
+		GLint param;
+
 	if(!stagesSet && usePipeline) {
 		stages = 0;
 		for(vector<GLuint>::iterator i = shaderList.begin(); i != shaderList.end(); i++) {
@@ -267,6 +247,35 @@ bool glShader::link(GLuint *getProgID) {
 		}
 		glUseProgramStages(pipeline,stages,programID);
 	}
+	if(usePipeline && stagesSet) {
+		glBindProgramPipeline(pipeline);
+	}
+	else {
+		glUseProgram(programID);
+	}
+	//Check for error
+	GLenum error = OGLCheckError(errorString,L"useProgram",1024);
+	if(error > 0) {
+		MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+		return 0;
+	}
+	if( error != GL_NO_ERROR )
+	{
+		wsprintf(str,L"Error binding shader! %S\n", gluErrorString( error ) );
+		printProgramLog();
+		return false;
+	}
+	return true;
+}
+void glShader::turnOff() {
+	if(usePipeline)
+		glBindProgramPipeline(GL_ZERO);
+	else
+		glUseProgram(GL_ZERO);
+
+}
+bool glShader::link(GLuint *getProgID) {
+
 	glLinkProgram(programID);
 	GLint programSuccess = GL_TRUE;
 	glGetProgramiv( programID, GL_LINK_STATUS, &programSuccess );
@@ -287,10 +296,10 @@ bool glShader::loadAndAttach(const shaderInfo *shaders) {
 	if(programID == NULL)
 		programID = glCreateProgram(); // create GLSL program
 	GLenum error = OGLCheckError(errorString,L"loadAndAttach",1024);
-			if(error > 0) {
-				MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
-				return 0;
-			}
+	if(error > 0) {
+		MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+		return 0;
+	}
 	GLuint currentShader;
 	GLint i = 0;
 	while(globRes && shaders[i].sType != GLSL_NONE) {

@@ -20,6 +20,14 @@
 
 #include <stdio.h>
 #include <wchar.h>
+#include <string>
+inline bool operator==(const std::string &a,const std::string &b) {
+	if(a.length() == b.length() && !strcmp(a.c_str(),b.c_str())) {
+		return true;
+	}
+	else
+		return false;
+}
 /*
 OGLCheckError function, returns UNICODE bytes array with error message
 */
@@ -56,4 +64,10 @@ inline int OGLCheckError(LPWSTR strOut, LPCWSTR funcName, int bufSize = 512) {
 	}
 	return error;
 }
+#define FOR(a,lim) for(int a = 0; a < lim; a++)
+#define FOReq(a,lim) for(int a = 0; a <= lim; a++)
+#define sFOR(a,start,lim) for(int a = start; a < lim; a++)
+#define sFOReq(a,start,lim) for(int a = start; a <= lim; a++)
+#define rFOR(a,lim) for(int a = lim - 1; a >= 0; a--)
+
 #endif

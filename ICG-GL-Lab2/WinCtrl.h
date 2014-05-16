@@ -13,7 +13,7 @@ private:
 	ULONG32 MOUSE_X, MOUSE_Y;
 public:
 	virtual int close();                                    // for WM_CLOSE
-	virtual int command(int id, int cmd, LPARAM msg);       // for WM_COMMAND: id, cmd, msg
+	virtual int command(HWND hwnd,int id, int cmd, LPARAM msg);       // for WM_COMMAND: id, cmd, msg
 	virtual int contextMenu(HWND handle, int x, int y);     // for WM_CONTEXTMENU: handle, x, y
 	virtual int create();                                   // for WM_CREATE
 	virtual int destroy();                                  // for WM_DESTROY

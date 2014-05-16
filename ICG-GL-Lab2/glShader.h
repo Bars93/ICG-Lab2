@@ -24,7 +24,7 @@ class glShader
 	GLuint pipeline;
 	GLbitfield stages;
 	bool stagesSet, usePipeline;
-	void printProgramLog();
+	
 	void printShaderLog(GLuint &shader);
 
 	void infoMessage(LPCWSTR text);
@@ -32,6 +32,7 @@ class glShader
 	char *loadFromFile(LPCWSTR path);
 	bool attachShader(GLuint &shID);
 public:
+	void printProgramLog();
 	bool loadAndAttach(const shaderInfo *shaders);
 	bool link(GLuint *getProgID);
 	inline void createProgram() { programID = glCreateProgram(); }
@@ -40,7 +41,7 @@ public:
 	const GLint getUniformLocation(const GLchar *unifName) const;
 	void bindFragDataOutput(const GLchar *outName) const;
 	GLboolean useProgram();
-
+	void turnOff();
 	glShader();
 	glShader(const shaderInfo *shaders);
 	~glShader(void);

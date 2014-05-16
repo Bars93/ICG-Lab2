@@ -46,15 +46,15 @@ bool glView::initGLEW(HINSTANCE *hInst) {
 		0, 0, CW_USEDEFAULT, CW_USEDEFAULT, NULL,
 		NULL, *hInst, NULL);
 
-	hdc = GetDC(hWndFake);
+	HDC fakeDC = GetDC(hWndFake);
 
 	// First, choose false pixel format
-	if(!setPixelFormat(hdc,32,24,8))
+	if(!setPixelFormat(fakeDC,32,24,8))
 		return false;
 
 	// Create the false, old style context (OpenGL 2.1 and before)
-	HGLRC hRCFake = wglCreateContext(hdc);
-	wglMakeCurrent(hdc, hRCFake);
+	HGLRC hRCFake = wglCreateContext(fakeDC);
+	wglMakeCurrent(fakeDC, hRCFake);
 
 	bool bResult = true;
 
@@ -71,6 +71,7 @@ bool glView::initGLEW(HINSTANCE *hInst) {
 
 	wglMakeCurrent(NULL, NULL);
 	wglDeleteContext(hRCFake);
+	ReleaseDC(hWndFake,fakeDC);
 	DestroyWindow(hWndFake);
 	UnregisterClass(szFakeClass,*hInst);
 	return bResult;
@@ -120,11 +121,6 @@ bool glView::createContext(HWND *handle, HDC *AppWinDC, int colorBits, int depth
 				return false;
 			}
 			m_hrc = hglrc;
-			if(!GLEW_VERSION_2_1)
-			{
-				MessageBox(AppWinHandle,L"OpenGL 2.1 not supported!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
-				return false;
-			}
 	}
 	else if(oglMajorVersion == 3  && oglMinorVersion <= 3 || 
 		oglMajorVersion == 4 &&  oglMinorVersion <= 4) {
@@ -142,7 +138,7 @@ bool glView::createContext(HWND *handle, HDC *AppWinDC, int colorBits, int depth
 			{
 				WGL_CONTEXT_MAJOR_VERSION_ARB, oglMajorVersion,
 				WGL_CONTEXT_MINOR_VERSION_ARB, oglMinorVersion,
-				WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+				WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB | WGL_CONTEXT_DEBUG_BIT_ARB,
 				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 				0
 			};
@@ -204,17 +200,12 @@ bool glView::createContext(HWND *handle, HDC *AppWinDC, int colorBits, int depth
 			if(wglSwapIntervalEXT != NULL) {
 				wglSwapIntervalEXT(GL_ZERO);
 			}
-			if(!GLEW_VERSION_4_2)
+			if(!GLEW_VERSION_4_3)
 			{
-				MessageBox(AppWinHandle,L"OpenGL 4.2 not supported!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+				MessageBox(AppWinHandle,L"OpenGL 4.3 not supported!",L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
 				return false;
 			}
 			getGLHostInfo();
-#if defined(IRBIS_GLFW_DBG_MODE)
-			WCHAR str[20];
-			swprintf(str,L"OpenGL %S",glHostInfo.GLversion);
-			MessageBox(AppWinHandle,str,L"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);
-#endif
 	}
 	else {
 		MessageBox(AppWinHandle,L"No currently availible OpenGL version",L"ICG GL Lab2", MB_OK | MB_ICONINFORMATION);

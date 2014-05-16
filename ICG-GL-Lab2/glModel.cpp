@@ -1,14 +1,95 @@
 #pragma warning (disable : 4996)
 #include "glModel.h"
 #include <stdlib.h>
-#include <cwchar>
+#include <wchar.h>
+// Debug output function
+static void APIENTRY debugOutput
+	(
+	GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar* message,
+	GLvoid* userParam
+	)
+{
+	FILE* f;
+	f = fopen("debug_output.txt","a");
+	if(f)
+	{
+		char debSource[32], debType[32], debSev[32];
+		bool Error(false);
 
+		if(source == GL_DEBUG_SOURCE_API_ARB)
+			strcpy(debSource, "OpenGL");
+		else if(source == GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB)
+			strcpy(debSource, "Windows");
+		else if(source == GL_DEBUG_SOURCE_SHADER_COMPILER_ARB)
+			strcpy(debSource, "Shader Compiler");
+		else if(source == GL_DEBUG_SOURCE_THIRD_PARTY_ARB)
+			strcpy(debSource, "Third Party");
+		else if(source == GL_DEBUG_SOURCE_APPLICATION_ARB)
+			strcpy(debSource, "Application");
+		else if (source == GL_DEBUG_SOURCE_OTHER_ARB)
+			strcpy(debSource, "Other");
+		else
+			assert(0);
+
+		if(type == GL_DEBUG_TYPE_ERROR)
+			strcpy(debType, "error");
+		else if(type == GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR)
+			strcpy(debType, "deprecated behavior");
+		else if(type == GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR)
+			strcpy(debType, "undefined behavior");
+		else if(type == GL_DEBUG_TYPE_PORTABILITY)
+			strcpy(debType, "portability");
+		else if(type == GL_DEBUG_TYPE_PERFORMANCE)
+			strcpy(debType, "performance");
+		else if(type == GL_DEBUG_TYPE_OTHER)
+			strcpy(debType, "message");
+		else if(type == GL_DEBUG_TYPE_MARKER)
+			strcpy(debType, "marker");
+		else if(type == GL_DEBUG_TYPE_PUSH_GROUP)
+			strcpy(debType, "push group");
+		else if(type == GL_DEBUG_TYPE_POP_GROUP)
+			strcpy(debType, "pop group");
+		else
+			assert(0);
+
+		if(severity == GL_DEBUG_SEVERITY_HIGH_ARB)
+		{
+			strcpy(debSev, "high");
+			//Error = true;
+		}
+		else if(severity == GL_DEBUG_SEVERITY_MEDIUM_ARB)
+			strcpy(debSev, "medium");
+		else if(severity == GL_DEBUG_SEVERITY_LOW_ARB)
+			strcpy(debSev, "low");
+		else if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+			strcpy(debSev, "notification");
+		else
+			assert(0);
+
+		fprintf(f,"%s: %s(%s) %d: %s\n", debSource, debType, debSev, id, message);
+		assert(!Error);
+		fclose(f);
+	}
+}
 glModel::glModel() :
 	normalDirect(1.0f),
 	hDevC(NULL)
 {
-	lightPos[mLight0] = glm::vec4(-10.0f, 10.0f, 2.0f, 1.0f);
-	lightDifColor[mLight0] = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	ZeroMemory(&shaderAttribLocs,sizeof(shaderAttribLocs));
+	ZeroMemory(&shaderUniformLocs,sizeof(shaderUniformLocs));
+	materialP.refAmbient = glm::vec3(0.2313f);
+	materialP.refDiffuse = glm::vec3(0.2775f);
+	materialP.refSpecular = glm::vec3(0.7739f);
+	materialP.Shininess = 90.0f;
+	lightsP[mLight0].ambient = glm::vec3(0.6f);
+	lightsP[mLight0].diffuse = glm::vec3(1.0f);
+	lightsP[mLight0].specular = glm::vec3(0.5f);
+	lightsP[mLight0].position = glm::vec4(100.0f,100.0f,-20.0f,1.0f);
 	X = glm::vec3(1.0f,0.0f,0.0f);
 	Y = glm::vec3(0.0f,1.0f,0.0f);
 	Z = glm::vec3(0.0f,0.0f,1.0f);
@@ -22,34 +103,46 @@ glModel::~glModel(void)
 }
 void glModel::initLightingMode() {
 	// attribute locations
-	MainWithLightShader.BindAttribLocation(0,"vPosition");
-	MainWithLightShader.BindAttribLocation(1,"vColor");
-	MainWithLightShader.BindAttribLocation(2,"normalVec");
-}
-void glModel::initDelightingMode() {
-	MainWithLightShader.BindAttribLocation(0,"vPosition");
-	MainWithLightShader.BindAttribLocation(1,"vColor");
+
 }
 void glModel::bindLightShaderVariables() {
 	// setting attribute locations
 	int nAttribs = 0;
 	glGetProgramiv(ProgLight, GL_ACTIVE_ATTRIBUTES,&nAttribs);
-	shaderAttribLocs[vertPosition] = MainWithLightShader.getAttribLocation("vPosition");
-	shaderAttribLocs[vertColor] = MainWithLightShader.getAttribLocation("vColor");
-	shaderAttribLocs[normalVec] = MainWithLightShader.getAttribLocation("normalVec");
+	shaderAttribLocs[vertPosition] = MainShader.getAttribLocation("vPosition");
+	shaderAttribLocs[normalVec] = MainShader.getAttribLocation("vNormal");
 	// setting uniform locations
-	/*
-	uniform mat4x4 MVMatrix;
-	uniform mat4x4 NormMatrix;
-	uniform mat4x4 MVPMatrix;
-	*/
-	shaderUniformLocs[MVMatr] = MainWithLightShader.getUniformLocation("ModelViewMatrix");
-	shaderUniformLocs[MVPMatr] = MainWithLightShader.getUniformLocation("MVP");
-	shaderUniformLocs[NormMatr] = MainWithLightShader.getUniformLocation("NormalMatrix");
-}
-void glModel::bindDelightShaderVariables() {
-
-
+	shaderUniformLocs[CameraPos] = MainShader.getUniformLocation("CameraPosition");
+	shaderUniformLocs[light0position] = MainShader.getUniformLocation("light0.position");
+	shaderUniformLocs[light0ambient] = MainShader.getUniformLocation("light0.ambient");
+	shaderUniformLocs[light0diffuse] = MainShader.getUniformLocation("light0.diffuse");
+	shaderUniformLocs[light0specular] = MainShader.getUniformLocation("light0.specular");
+	shaderUniformLocs[matAmbient] = MainShader.getUniformLocation("material.refAmbient");
+	shaderUniformLocs[matDiffuse] = MainShader.getUniformLocation("material.refDiffuse");
+	shaderUniformLocs[matSpecular] = MainShader.getUniformLocation("material.refSpecular");
+	shaderUniformLocs[matShininess] = MainShader.getUniformLocation("material.Shininess");
+	shaderUniformLocs[vertColor3f] = MainShader.getUniformLocation("vColor");
+	shaderUniformLocs[turnLight] = MainShader.getUniformLocation("turnLight");
+	NormalVecShader.useProgram();
+	NDshaderAttribs[NDvertPosition] = NormalVecShader.getAttribLocation("vPosition");
+	NDshaderAttribs[NDnormalVec] = NormalVecShader.getAttribLocation("vertNormal");
+	int attrNum, attrLen, curLength, curWritten, curLocation, curSize;
+	GLenum attrType;
+	std::vector<GLchar> allAList, attrname;
+	std::vector<WCHAR> outStr;
+	outStr.resize(500,'\0');
+	glGetProgramiv(NShaderProg,GL_ACTIVE_ATTRIBUTES,&attrNum);
+	glGetProgramiv(NShaderProg,GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,&attrLen);
+	for(int i = 0; i < attrNum; i++) {
+		attrname.resize(attrLen,'\0');
+		glGetActiveAttrib(NShaderProg,i,attrLen,&curWritten,&curSize,&attrType,(GLchar*)&attrname[0]);
+		curLocation = glGetAttribLocation(NShaderProg,&attrname[0]);
+		attrname.resize(128,'\0');
+		swprintf(&outStr[0],L"%S - location: %d",&attrname[0],curLocation);
+		MessageBox(handle,&outStr[0],L"DBG",MB_OK | MB_ICONINFORMATION);
+		attrname.clear();
+	}
+	NormalVecShader.turnOff();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -66,16 +159,22 @@ bool glModel::init()
 		MessageBox(handle,errorString,L"ICG GL Lab2", MB_OK | MB_ICONERROR);
 		return false;
 	}
+	if(error == 0 && !glewIsSupported("GL_ARB_debug_output")) {
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+		glDebugMessageControlARB(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+		glDebugMessageCallbackARB(debugOutput, NULL);
+	}
 	bool globRes = true;
-	const shaderInfo curShaders[] = {
+	const shaderInfo MainShaderInfo[] = {
 		{L"shaders\\ICG-Lab2.vert",GLSL_VERTEX},
 		{L"shaders\\ICG-Lab2.frag",GLSL_FRAGMENT},
 		{L"",GLSL_NONE},
 		0
 	};
-	const shaderInfo curlightShaders[] = {
-		{L"shaders\\ICG-Lab2_with_lighting.vert",GLSL_VERTEX},
-		{L"shaders\\ICG-Lab2_with_lighting.frag",GLSL_FRAGMENT},
+	const shaderInfo NdrawInfo[] = {
+		{L"shaders\\NormalsDraw.vert",GLSL_VERTEX},
+		{L"shaders\\NormalsDraw.geom",GLSL_GEORMETRY},
+		{L"shaders\\NormalsDraw.frag",GLSL_FRAGMENT},
 		{L"",GLSL_NONE},
 		0
 	};
@@ -84,27 +183,22 @@ bool glModel::init()
 		MessageBox(handle,errorString,L"ICG GL Lab2", MB_OK | MB_ICONERROR);
 		return false;
 	}
-	MainShader.loadAndAttach(curShaders);
-	MainWithLightShader.loadAndAttach(curlightShaders);
-	initLightingMode();
-	initDelightingMode();
-	if(MainShader.link(&ProgLight)) 
+	MainShader.loadAndAttach(MainShaderInfo);
+	NormalVecShader.loadAndAttach(NdrawInfo);
+	//MainShader.setProgramParameteri(GL_PROGRAM_SEPARABLE,GL_TRUE);
+	if(MainShader.link(&ProgLight) && NormalVecShader.link(&NShaderProg)) 
 		modelStates.useShadersflg = 1;
 	else 
 		modelStates.useShadersflg = 0;
 
-	if(MainWithLightShader.link(&ProgDelight)) 
-		modelStates.useShadersflg = 1;
-	else 
-		modelStates.useShadersflg = 0;
-	if(MainWithLightShader.useProgram()) {
-		modelStates.shaderInUse = 1;
-	}
-	//glClearColor(0.0,0.0,0.0, 1.0);
+	MainShader.printProgramLog();
+	NormalVecShader.printProgramLog();
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LESS); 
-	glPointSize(20.0f);
+	glDepthFunc(GL_LESS);
+	glClearDepth(1.0f);
 	error = OGLCheckError(errorString,L"Init",1024);
+	glGenVertexArrays(VAOcount,VAOs);
+	glGenBuffers(bufCount,buffers);
 	if(MessageBox(handle,L"Загрузить данные из файлов?",L"ICG GL Lab-2", MB_YESNO | MB_ICONQUESTION) == IDYES) {
 		loadFileData();
 	}
@@ -113,12 +207,13 @@ bool glModel::init()
 		globRes = false;
 	}
 	modelStates.readyToDraw = modelStates.loadSlice & modelStates.loadPath & modelStates.useShadersflg;
-	lookCamera(glm::vec3(10.0f, 10.0f, -8.00f), glm::vec3(0.0f, 0.0f, 0.0f),false);
+	lookCamera(glm::vec3(50.0f, 50.0f, -8.00f), glm::vec3(0.0f, 0.0f, 0.0f),false);
 	if(modelStates.readyToDraw) {
-
+		//MainShader.setPipelineStages(GL_VERTEX_SHADER_BIT | GL_FRAGMENT_SHADER_BIT);
+		MainShader.useProgram();
 		bindLightShaderVariables();
-
-		if(!initBuffers()) {
+		error = OGLCheckError(errorString,L"Init",1024);
+		if(!error && !initBuffers()) {
 			MessageBox(handle,L"Error buffer init",L"ICG GL Lab-2",MB_OK | MB_ICONEXCLAMATION);
 			globRes = false;
 		}
@@ -130,107 +225,49 @@ bool glModel::init()
 	}
 	return globRes;
 }
-void glModel::unbindAllShaders() {
-	if(modelStates.shaderInUse) {
-		glUseProgram(GL_ZERO);
-		modelStates.shaderInUse = 0;
-	}
-}
-void glModel::initLights() {
-
-	//glEnable(GL_LIGHTING);
-	//glEnable(GL_LIGHT0);
-	//glLightfv(GL_LIGHT0, GL_DIFFUSE, glm::value_ptr(lightDifColor[mLight0]));
-	//glLightfv(GL_LIGHT0, GL_POSITION, glm::value_ptr(lightPos[mLight0]));
-}
-void glModel::calcNormVectors() {
-	const GLfloat normVScale = 3.0f;
-	if(vertexCount == GL_ZERO)
-		return;
-	glm::vec3 dot1,dot2,dot3;
-	for(GLuint i = 0; i < vertexCount; i+=3) {
-		int n1 = i, n2 = i + 1, n3 = i + 2;
-		dot1 = quadBuf[i].xyz();
-		dot2 = quadBuf[i+1].xyz();
-		dot3 = quadBuf[i+2].xyz();
-		normalBuf.push_back(calculateNormal(dot1,dot2,dot3));
-		normalBuf.push_back(calculateNormal(dot1,dot2,dot3));
-		normalBuf.push_back(calculateNormal(dot1,dot2,dot3));
-	}
-	for(GLuint i = 0; i < vertexCount; i++) {
-		normVBuf.push_back(quadBuf[i].xyz());
-		normVBuf.push_back(quadBuf[i].xyz()+(normalBuf[i]*normVScale));
-	}
-	normVecCount = normVBuf.size();
-}
-inline float randFloat(float a, float b) {
-	return ((b-a)*((float)rand()/RAND_MAX))+a;
-}
 bool glModel::initBuffers() {
 	bool globRes = true;
+	GLuint error = 0U;
 	if(modelStates.loadPath && modelStates.loadSlice) {
-		if(modelStates.useShadersflg) {
-			if(!modelStates.lighting) {
-
-			}
-
-		}
-		vertexCount = userPath.size();
-		for(GLuint i = 0; i < vertexCount; i++)
-			colorBuf.push_back(glm::vec3(randFloat(0.0f,1.0f),randFloat(0.0f,1.0f),randFloat(0.0f,1.0f)));
-		//calcNormVectors();
+		vertexCount = drawPath.size();
 		int bufferSize = 0;
-		glGenBuffers(bufCount,buffers);
+		GLint UniformBufferOffset(0);
+		GLuint sideBufSz = sidesVerteces.size()*sizeof(glm::vec3);
+		GLuint vertBufSz = drawPath.size()*sizeof(glm::vec3);
+		GLuint curBufOffset(0);
+		glGetIntegerv(
+			GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT,
+			&UniformBufferOffset);
 
-		//glBindBuffer(GL_ARRAY_BUFFER,buffers[vnVecBufID]);
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*normVecCount, &normVBuf[0], GL_STATIC_DRAW);
-		//bufferSize = 0;
-		//glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-		//if(sizeof(glm::vec3)*normVecCount != bufferSize)
-		//{
-		//	glDeleteBuffersARB(1, &buffers[vnVecBufID]);
-		//	buffers[vnVecBufID] = 0;
-		//	MessageBox(handle,L"VBO error",L"K.O",MB_OK);
-		//	modelStates.showNormals = 0;
-		//}
+		GLint UniformBlockSize = glm::max(GLint(sizeof(matrices)), UniformBufferOffset);
+		MainShader.useProgram();
+		glBindVertexArray(VAOs[mainVA]);
+		glBindBuffer(GL_UNIFORM_BUFFER,buffers[matrMapBufID]);
+		glBufferData(GL_UNIFORM_BUFFER, UniformBlockSize, NULL, GL_DYNAMIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-		glBindBuffer(GL_ARRAY_BUFFER,buffers[colorBufID]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*vertexCount, &colorBuf[0], GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER,buffers[pathDrawID]);
+		glBufferData(GL_ARRAY_BUFFER,vertBufSz*2+sideBufSz*2,NULL,GL_STATIC_DRAW);
+		glBufferSubData(GL_ARRAY_BUFFER,curBufOffset,vertBufSz, &drawPath[0]); // pass to gpu positions of faces
+		curBufOffset += vertBufSz;
+		glBufferSubData(GL_ARRAY_BUFFER,curBufOffset,sideBufSz,&sidesVerteces[0]); // pass to gpu position of sides
+		curBufOffset += sideBufSz;
+		glBufferSubData(GL_ARRAY_BUFFER,curBufOffset,vertBufSz, &normalBuf[0]); // pass to gpu faces points normals
+		curBufOffset += vertBufSz;
+		glBufferSubData(GL_ARRAY_BUFFER,curBufOffset,sideBufSz, &sidesNormals[0]); // pass to gpu sides points normals
+		curBufOffset += sideBufSz;
 		bufferSize = 0;
 		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-		if(sizeof(glm::vec3)*vertexCount != bufferSize)
+		if(curBufOffset != bufferSize)
 		{
-			glDeleteBuffersARB(1, &buffers[colorBufID]);
-			buffers[colorBufID] = 0;
+			glDeleteBuffersARB(1, &buffers[pathDrawID]);
+			buffers[pathDrawID] = 0;
 			MessageBox(handle,L"VBO error",L"K.O",MB_OK);
-			modelStates.showNormals = 0;
 		}
-		glBindBuffer(GL_ARRAY_BUFFER,buffers[vbID]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec4)*vertexCount, &userPath[0], GL_STATIC_DRAW);
-		bufferSize = 0;
-		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-		if(sizeof(glm::vec4)*vertexCount != bufferSize)
-		{
-			glDeleteBuffersARB(1, &buffers[vbID]);
-			buffers[vbID] = 0;
-			MessageBox(handle,L"VBO error",L"K.O",MB_OK);
-			globRes = false;
-		}
-		/*glBindBuffer(GL_ARRAY_BUFFER,buffers[vnID]);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3)*vertexCount, &normalBuf[0],GL_STATIC_DRAW);
-		bufferSize = 0;
-		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-		if(sizeof(glm::vec3)*vertexCount != bufferSize)
-		{
-		glDeleteBuffersARB(1, &buffers[vnID]);
-		buffers[vnID] = 0;
-		MessageBox(handle,L"VBO error",L"K.O",MB_OK);
-		globRes = false;
-		}
-		*/
-		glGenVertexArrays(VAOcount,VAOs);
+		error = OGLCheckError(errorString,L"initBuffers",1024);
 		RebindShaderAttributes();
-		colorBuf.clear();
+		error = 0U;
+		error = OGLCheckError(errorString,L"initBuffers",1024);
 	}
 	else {
 		globRes = false;
@@ -251,60 +288,126 @@ void glModel::swapDevBuffers() {
 	}
 
 }
-void glModel::RebindShaderAttributes() {
-	glBindVertexArray(VAOs[quadsVA]);
-	glBindBuffer(GL_ARRAY_BUFFER,buffers[vbID]);
-	glEnableVertexAttribArray(/*shaderAttribLocs[vertPosition]*/0);
-	glVertexAttribPointer(/*shaderAttribLocs[vertPosition]*/0,3,GL_FLOAT,GL_FALSE,0,(GLvoid*)0);
-
-	//glBindBuffer(GL_ARRAY_BUFFER,buffers[vnID]);
-	//glVertexAttribPointer(shaderAttribLocs[normalVec],3,GL_FLOAT,GL_TRUE,0,(GLvoid*)0);
-	//glEnableVertexAttribArray(shaderAttribLocs[normalVec]);
-	glBindBuffer(GL_ARRAY_BUFFER,buffers[colorBufID]);
-	glEnableVertexAttribArray(/*shaderAttribLocs[vertColor]*/2);
-	glVertexAttribPointer(/*shaderAttribLocs[vertColor]*/2,3,GL_FLOAT,GL_FALSE,0,(GLvoid*)0);
-	glBindVertexArray(VAOs[normVecVA]);
-
-	glBindBuffer(GL_ARRAY_BUFFER,buffers[vnVecBufID]);
+void glModel::RebindShaderAttributes() 
+{
+	GLint maxVAttr = -1;
+	glGetIntegerv(GL_MAX_VERTEX_ATTRIBS,&maxVAttr);
+	GLuint sideBufSz = sidesVerteces.size()*sizeof(glm::vec3);
+	GLuint vertBufSz = drawPath.size()*sizeof(glm::vec3);
+	// bind buffers to Vertex array objects
+	glBindVertexArray(VAOs[mainVA]);
+	glBindBuffer(GL_ARRAY_BUFFER,buffers[pathDrawID]);
 	glVertexAttribPointer(shaderAttribLocs[vertPosition],3,GL_FLOAT,GL_FALSE,0,(GLvoid*)0);
 	glEnableVertexAttribArray(shaderAttribLocs[vertPosition]);
+	glVertexAttribPointer(shaderAttribLocs[normalVec],3,GL_FLOAT,GL_FALSE,0,(GLvoid*)(vertBufSz+sideBufSz));
+	glEnableVertexAttribArray(shaderAttribLocs[normalVec]);
 	glBindVertexArray(GL_ZERO);
 
 }
+void glModel::RebindNormalShaderAttributes() {
+	GLuint sideBufSz = sidesVerteces.size()*sizeof(glm::vec3);
+	GLuint vertBufSz = drawPath.size()*sizeof(glm::vec3);
+	glBindVertexArray(VAOs[mainVA]);
+	glBindBuffer(GL_ARRAY_BUFFER,buffers[pathDrawID]);
+	glVertexAttribPointer(NDshaderAttribs[NDvertPosition],3,GL_FLOAT,GL_FALSE,0,(GLvoid*)0);
+	glEnableVertexAttribArray(NDshaderAttribs[NDvertPosition]);
+	glVertexAttribPointer(NDshaderAttribs[NDnormalVec],3,GL_FLOAT,GL_FALSE,0,(GLvoid*)(vertBufSz+sideBufSz));
+	glEnableVertexAttribArray(NDshaderAttribs[NDnormalVec]);
+	glBindVertexArray(GL_ZERO);
+}
+void glModel::unbindShaderAttributes() {
+	glDisableVertexAttribArray(shaderAttribLocs[vertPosition]);
+	glDisableVertexAttribArray(shaderAttribLocs[normalVec]);
+
+}
+void glModel::unbindNormalShaderAttributes() {
+	glDisableVertexAttribArray(NDshaderAttribs[NDvertPosition]);
+	glDisableVertexAttribArray(1);
+}
 void glModel::draw()
 {
-	// clear buffer
-	if(modelStates.lighting) {
-		initLights();
+	GLuint error = OGLCheckError(errorString,L"draw",1024);
+	if(glIsEnabled(GL_SCISSOR_TEST)) {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
-	glClearColor(0.0,0.0,0.0,1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if(modelStates.readyToDraw) {
 		if(modelStates.useShadersflg) {
-			if(!modelStates.shaderInUse) {
-				if(MainWithLightShader.useProgram())
-					modelStates.shaderInUse = 1;
+			MainShader.useProgram();
+			RebindShaderAttributes();
+			matrices.ModelView = matrices.View * matrices.Model;
+			matrices.ModelViewProjection = matrices.Projection * matrices.ModelView;
+			matrices.Normal = glm::transpose(glm::inverse(matrices.ModelView));
+			glBindBuffer(GL_UNIFORM_BUFFER, buffers[matrMapBufID]);
+			sTransform* Pointer = (sTransform*)glMapBufferRange(
+				GL_UNIFORM_BUFFER, 0, sizeof(sTransform),
+				GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+			*Pointer = matrices;
+			glUnmapBuffer(GL_UNIFORM_BUFFER);
+			// selected color
+			glm::vec3 curColor(0.5f);
+			glProgramUniform3fv(ProgLight,shaderUniformLocs[vertColor3f],1,glm::value_ptr(curColor));
+			glProgramUniform3fv(ProgLight,shaderUniformLocs[CameraPos],1,glm::value_ptr(Position));
+			glProgramUniform4fv(ProgLight,shaderUniformLocs[light0position],1,glm::value_ptr(lightsP[mLight0].position));
+			glProgramUniform3fv(ProgLight,shaderUniformLocs[light0ambient],1,glm::value_ptr(lightsP[mLight0].ambient));
+			glProgramUniform3fv(ProgLight,shaderUniformLocs[light0diffuse],1,glm::value_ptr(lightsP[mLight0].diffuse));
+			glProgramUniform3fv(ProgLight,shaderUniformLocs[light0specular],1,glm::value_ptr(lightsP[mLight0].specular));
+			glProgramUniform3fv(ProgLight,shaderUniformLocs[matAmbient],1,glm::value_ptr(materialP.refAmbient));
+			glProgramUniform3fv(ProgLight,shaderUniformLocs[matDiffuse],1,glm::value_ptr(materialP.refDiffuse));
+			glProgramUniform3fv(ProgLight,shaderUniformLocs[matSpecular],1,glm::value_ptr(materialP.refSpecular));
+			glProgramUniform1f(ProgLight,shaderUniformLocs[matShininess],materialP.Shininess);
+			error = OGLCheckError(errorString,L"draw",1024);
+			if(error > 0) {
+				MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
+				return;
 			}
 		}
-		if(modelStates.shaderInUse) {
-			bindLightShaderVariables();
-			MV = modelMatr * ViewMatrix;
-			normalMatrix = glm::transpose(glm::inverse(MV));
-			MVP = projMatr * MV;
-			glUniformMatrix4fv(shaderUniformLocs[MVPMatr],1,GL_FALSE,glm::value_ptr(MVP));
-			glUniformMatrix4fv(shaderUniformLocs[NormMatr],1,GL_FALSE,glm::value_ptr(normalMatrix));
+
+		glBindVertexArray(VAOs[mainVA]);
+
+		glBindBufferBase(GL_UNIFORM_BUFFER, 1, buffers[matrMapBufID]);
+		if(modelStates.wireframe) {
+			glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+			glUniform1i(shaderUniformLocs[turnLight],0);
+			glDisable(GL_CULL_FACE);
 		}
-		glBindVertexArray(VAOs[quadsVA]);
+		else {
+			if(modelStates.lighting) {
+				glUniform1i(shaderUniformLocs[turnLight],1);
+			}
+			else {
+				glUniform1i(shaderUniformLocs[turnLight],0);
+			}
+			glEnable(GL_CULL_FACE);
+			glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+		}
 		glDrawArrays(GL_TRIANGLES,0,vertexCount);
-		glBindVertexArray(GL_ZERO);
-		if(modelStates.useShadersflg) {
-			glUseProgram(0);
-			modelStates.shaderInUse = 0;
+		glDrawArrays(GL_TRIANGLE_FAN,vertexCount,sliceVertCount);
+		glFrontFace(GL_CW);
+		glDrawArrays(GL_TRIANGLE_FAN,vertexCount+sliceVertCount,sliceVertCount);
+		glFrontFace(GL_CCW);
+		MainShader.turnOff();
+		glBindBuffer(GL_UNIFORM_BUFFER,GL_ZERO);
+		unbindShaderAttributes();
+		error = OGLCheckError(errorString,L"draw",1024);
+		if(modelStates.showNormals) {
+			NormalVecShader.useProgram();
+			RebindNormalShaderAttributes();
+			glBindVertexArray(VAOs[mainVA]);
+			error = OGLCheckError(errorString,L"draw",1024);
+			GLint loc = NormalVecShader.getUniformLocation("vColor");
+			glUniform3fv(loc,1,glm::value_ptr(glm::vec3(1.0f)));
+			loc = NormalVecShader.getUniformLocation("MVP");
+			glUniformMatrix4fv(loc,1,GL_FALSE,glm::value_ptr(matrices.ModelViewProjection));
+			glDrawArrays(GL_POINTS,0,vertexCount + sliceVertCount*2);
+			NormalVecShader.turnOff();
+			unbindNormalShaderAttributes();
 		}
+		glBindVertexArray(GL_ZERO);
+		//NormalVecShader.turnOff();
 
 	}
 	swapDevBuffers();
-	GLint error = OGLCheckError(errorString,L"draw",1024);
+	error = OGLCheckError(errorString,L"draw",1024);
 	if(error > 0) {
 		MessageBox(handle,errorString,L"ICG GL Lab-2", MB_OK | MB_ICONERROR);
 	}
@@ -338,13 +441,154 @@ void glModel::setViewport(int w, int h)
 	if(h == 0) h = 1;
 	this->width = GLfloat(w) - 180.0f;
 	this->height = GLfloat(h);
-	GLfloat aspect = width / height;
-	// set viewport to be the entire window'
+	GLfloat aspect(0.0f); 
+	if(w >= h) {
+		aspect = width / height;
+	}
+	else {
+		aspect = height / width;
+	}
+	// set viewport to be the entire window
+	GLclampf val = 240.0f/255.0f;
+	glClearColor(val,val,val,1.0f);
+	glDisable(GL_SCISSOR_TEST);
+	glClear(GL_COLOR_BUFFER_BIT);
+	swapDevBuffers();
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.0f,0.0f,0.0f,1.0f);
+	glEnable(GL_SCISSOR_TEST);
 	glViewport(0,0,w-180,h);
-	modelMatr = glm::translate(glm::vec3(0.0f,5.0f,0.0f));
-	projMatr = glm::perspective(45.0f, aspect,  0.001f, 1000.0f);
+	glScissor(0,0,w-180,h);
+	matrices.Model = glm::translate(glm::vec3(0.0f));
+	matrices.Projection = glm::perspective(45.0f, aspect,  0.01f, 10000.0f);
 }
+glm::vec3 glModel::projectPoint(const glm::vec3 &point,glm::mat3 &rotMatr,glm::vec3 &translateVector) {
+	glm::vec3 rotVec = rotMatr * point;
+	return rotVec+glm::vec3(translateVector);
+}
+void glModel::calculateSurfsWithoutBreaks() {
+	// clear buffers
+	indices.clear();
+	slicePath.clear();
+	normalBuf.clear();
+	drawPath.resize(0);
+	normVBuf.resize(0);
+	sidesVerteces.resize(0);
+	sidesNormals.resize(0);
+	totalPathLength = 0.0f;
+	const GLfloat angle = 0.0f;
+	glm::mat3 rotation, R;
+	glm::vec3 translation;
+	glm::vec3 v1,v2,v3,v4;
+	glm::vec3 T0, T1, N0, N1, B0, B1;
+	glm::vec3 A;
+	GLfloat sqx, sqy, sqz;
+	GLfloat COS, COSL, SIN;
+	GLfloat xycosl, yzcosl, zxcosl;
+	GLfloat xsin, ysin, zsin;	
+	glm::vec3 nrm, nrm2, nrm3, nrm4;
+	// fill sides buffers and calculate their normals
 
+	FOR(n,pathSteps)
+	{
+		translation = glm::vec3(userPath[n].x, userPath[n].y, userPath[n].z);
+		if(n == 0) {
+			T0 = glm::normalize(glm::vec3(userPath[1].x - userPath[0].x , userPath[1].y - userPath[0].y, userPath[1].z - userPath[0].z));
+			N0 = glm::normalize(glm::cross(T0,glm::vec3(0.0f,1.0f,0.0f)));
+			B0 = glm::normalize(glm::cross(T0,N0));
+			T1 = T0;
+			N1 = N0;
+			B1 = B0;
+		}
+		else if(n != (pathSteps-1)) {
+			T1 = glm::vec3(userPath[n+1].x - userPath[n].x , userPath[n+1].y - userPath[n].y, userPath[n+1].z - userPath[n].z);
+			T1 = glm::normalize(T1);
+			A =  -glm::cross(T0,T1)/ (glm::abs(glm::length(T0))*glm::abs(glm::length(T1)));
+			A = glm::normalize(A);
+			sqx = A.x*A.x;
+			sqy = A.y*A.y;
+			sqz = A.z*A.z;
+			COS = glm::dot(T0,T1);
+			COSL = 1-COS;
+			xycosl = A.x*A.y*COSL;
+			yzcosl = A.y*A.z*COSL;
+			zxcosl = A.x*A.z*COSL;
+			SIN = sqrt(1-COS*COS);
+			xsin = A.x * SIN;
+			ysin = A.y * SIN;
+			zsin = A.z * SIN;
+
+			R = glm::mat3(
+				glm::vec3(sqx+(1-sqx)*COS, xycosl+zsin, zxcosl-ysin),
+				glm::vec3(xycosl-zsin, sqy+(1-sqy)*COS, yzcosl+xsin),
+				glm::vec3(zxcosl+ysin, yzcosl-xsin, sqz+(1-sqz)*COS)
+				);
+
+			N1 = N0*R;
+			B1 = glm::cross(T1,N1);
+			T0=T1;
+			N0=N1;
+			B0=B1;
+
+		}
+		float a = n/(float (pathSteps))*angle;
+		N1 = glm::rotate(N0, a, T1);
+		B1 = glm::rotate(B0, a, T1);
+		rotation = glm::mat3(T1, N1, B1);
+		FOR(i,sliceVertCount) {
+			v1 = projectPoint(glm::vec3(0, slice[i].y, slice[i].x), rotation, translation);
+			slicePath.push_back(v1);
+			GLint curVert = 0;
+
+			curVert = n*sliceVertCount+i;
+			// calculate draw way
+			if(n != pathSteps - 1 ) {
+				GLint begSlice = n*sliceVertCount;
+				GLint begNextSlice = (n+1)*sliceVertCount;
+				GLint endSlice = begNextSlice - 1;
+				GLint endNextSlice = (n+2)*sliceVertCount - 1;
+				indices.push_back((GLuint) (curVert - 1 < begSlice) ? endSlice : (curVert - 1));
+				indices.push_back(curVert);
+				indices.push_back(curVert+sliceVertCount);
+				indices.push_back(curVert);
+				indices.push_back((curVert+sliceVertCount+1) > endNextSlice ? begNextSlice : (curVert+sliceVertCount+1));
+				indices.push_back(curVert+sliceVertCount);
+			}
+
+		}
+	}
+	vector<glm::vec3>::iterator rangeBeg, rangeEnd;
+	rangeEnd = slicePath.end();
+	rangeBeg = rangeEnd - sliceVertCount;
+	sidesVerteces.insert(sidesVerteces.begin(),rangeBeg,rangeEnd);
+	GLuint indStart = 0;
+	nrm = -calculateNormal(sidesVerteces[indStart],sidesVerteces[indStart+1],sidesVerteces[indStart+2]);
+	for(GLuint i = 0; i < sliceVertCount; i++) {
+		sidesNormals.push_back(nrm);
+	}
+	rangeBeg = slicePath.begin();
+	rangeEnd = rangeBeg + sliceVertCount;
+	sidesVerteces.insert(sidesVerteces.end(),rangeBeg,rangeEnd);
+	indStart = sliceVertCount;
+	nrm = calculateNormal(sidesVerteces[indStart],sidesVerteces[indStart+1],sidesVerteces[indStart+2]);
+	for(GLuint i = 0; i < sliceVertCount; i++) {
+		sidesNormals.push_back(nrm);
+	}
+	GLuint VCount = indices.size();
+	for(GLuint i = 0; i < VCount; i++) {
+		drawPath.push_back(slicePath[indices[i]]);
+	}
+	indices.clear();
+	for(GLuint i = 0; i < VCount; i+=3) {
+		v1 = drawPath[i];
+		v2 = drawPath[i+1];
+		v3 = drawPath[i+2];
+		nrm = calculateNormal(v1,v3,v2);
+		normalBuf.push_back(nrm);
+		normalBuf.push_back(nrm);
+		normalBuf.push_back(nrm);
+	}
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // rotate the camera
@@ -407,7 +651,7 @@ void glModel::zoomCamera(int delta)
 }
 // Calculate view matrix
 void glModel::calculateViewMatrix() {
-	ViewMatrix = glm::mat4x4(X.x,Y.x,Z.x,0.0f,X.y,Y.y,Z.y,0.0f,X.z,Y.z,Z.z,0.0f,-glm::dot(X,Position),-glm::dot(Y,Position),-glm::dot(Z,Position),1.0f);
+	matrices.View = glm::mat4x4(X.x,Y.x,Z.x,0.0f,X.y,Y.y,Z.y,0.0f,X.z,Y.z,Z.z,0.0f,-glm::dot(X,Position),-glm::dot(Y,Position),-glm::dot(Z,Position),1.0f);
 }
 void glModel::moveCameraByKB(int Keys) {
 	float Speed = 5.0f;
@@ -417,9 +661,10 @@ void glModel::moveCameraByKB(int Keys) {
 
 	float Distance = Speed * 0.05f;
 
-	glm::vec3 Up(0.0f, 1.0f, 0.0f);
-	glm::vec3 Right = X;
-	glm::vec3 Forward = glm::cross(Up, Right);
+	glm::vec3 Forward = Z, Right = X, Up = Y;
+	//glm::vec3 Up(0.0f, 1.0f, 0.0f);
+	//glm::vec3 Right = X;
+	//glm::vec3 Forward = glm::cross(Up, Right);
 
 	Up *= Distance;
 	Right *= Distance;
@@ -427,8 +672,8 @@ void glModel::moveCameraByKB(int Keys) {
 
 	glm::vec3 Movement;
 
-	if(Keys & 0x01) Movement += Forward;
-	if(Keys & 0x02) Movement -= Forward;
+	if(Keys & 0x01) Movement -= Forward;
+	if(Keys & 0x02) Movement += Forward;
 	if(Keys & 0x04) Movement -= Right;
 	if(Keys & 0x08) Movement += Right;
 	if(Keys & 0x10) Movement += Up;
@@ -546,4 +791,7 @@ void glModel::loadFileData() {
 			}
 		}
 	} 
+	if(modelStates.loadPath && modelStates.loadSlice) {
+		calculateSurfsWithoutBreaks();
+	}
 }

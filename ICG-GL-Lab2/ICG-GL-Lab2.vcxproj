@@ -60,7 +60,6 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalOptions>/D "IRBIS_GLFW_DBG_MODE" %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -124,9 +123,8 @@
   <ItemGroup>
     <None Include="shaders\ICG-Lab2.frag" />
     <None Include="shaders\ICG-Lab2.vert" />
-    <None Include="shaders\ICG-Lab2_with_lighting.frag" />
-    <None Include="shaders\ICG-Lab2_with_lighting.vert" />
     <None Include="shaders\NormalsDraw.frag" />
+    <None Include="shaders\NormalsDraw.geom" />
     <None Include="shaders\NormalsDraw.vert" />
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 #include "WinCtrl.h"
 
 inline int WinCtrl::close() { ::DestroyWindow(handle); return 0; }
-inline int WinCtrl::command(int id, int cmd, LPARAM msg) { return 0; }
+inline int WinCtrl::command(HWND hwnd,int id, int cmd, LPARAM msg) { return 0; }
 inline int WinCtrl::contextMenu(HWND handle, int x, int y) { return 0; }
 inline int WinCtrl::create() { return 0; }
 inline int WinCtrl::destroy() { return 0; }

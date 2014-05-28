@@ -81,11 +81,21 @@ int glCtrl::command(HWND hwnd,int id, int cmd, LPARAM msg)
 {
 	WCHAR *str;
 	BOOL checked;
+	static BOOL lastLightingMode(FALSE), lastTexMode(FALSE);
 	switch(id) {
 	case ID_MENU_EXIT:
 		if(MessageBox(handle,L"Уже уходите?",L"ICG GL Lab2", MB_YESNO | MB_ICONQUESTION) == IDYES) {
 			PostQuitMessage(EXIT_SUCCESS);
 		}
+		break;
+	case ID_MENU_LOADSLICE:
+		modelGL.loadSliceData();
+		modelGL.checkReadyToDraw();
+		break;
+	case ID_MENU_LOADSLICEPATH:
+		modelGL.loadPositionsData();
+		modelGL.initBuffers();
+		modelGL.checkReadyToDraw();
 		break;
 	case ID_MENU_LOADDATA:
 		// Add load func 
@@ -97,21 +107,30 @@ int glCtrl::command(HWND hwnd,int id, int cmd, LPARAM msg)
 		str = new WCHAR[1024];
 		swprintf(str,2048,L"Vendor: %S\nRenderer: %S\nOpenGL Version: %S\nGLSL version: %S\nSupported Extensions (num): %d",
 			curHostInfo->vendor,curHostInfo->renderer,curHostInfo->GLversion,curHostInfo->GLSLversion,curHostInfo->numExts);
-		MessageBox(handle,str,L"Technical Data",MB_OK | MB_ICONINFORMATION);
+		MessageBox(handle,str,L"Техническая информация",MB_OK | MB_ICONINFORMATION);
 		delete[] str;
 		break;
 	case ID_MENU_ABOUT:
-
+		str = new WCHAR[128];
+		swprintf(str,128,L"Interactive Computer Graphics\nLaboratory Work No.2\nPowered by OpenGL 4.0+ (4.3)\nAuthor: Popov Daniel");
+		MessageBox(handle,str,L"О программе",MB_OK | MB_ICONINFORMATION);
+		delete[] str;
 		break;
 	case IDC_CB_WIREFRAME:
 		checked = IsDlgButtonChecked(hwnd,IDC_CB_WIREFRAME);
 		if(checked) {
 			CheckDlgButton(hwnd,IDC_CB_WIREFRAME,BST_UNCHECKED);
 			modelGL.changeShowMode(0);
+			modelGL.changeLight(lastLightingMode);
+			modelGL.changeTextureMode(lastTexMode);
 		}
 		else {
 			CheckDlgButton(hwnd,IDC_CB_WIREFRAME,BST_CHECKED);
 			modelGL.changeShowMode(1);
+			lastLightingMode = modelGL.getLighting();
+			lastTexMode = modelGL.getTextureMode();
+			modelGL.changeLight(0);
+			modelGL.changeTextureMode(0);
 		}
 		break;
 	case IDC_CB_LIGHTING:
@@ -136,9 +155,63 @@ int glCtrl::command(HWND hwnd,int id, int cmd, LPARAM msg)
 			modelGL.changeShowNormals(1);
 		}
 		break;
-
+	case IDC_CB_SMOOTHNORMALS:
+		checked = IsDlgButtonChecked(hwnd,IDC_CB_SMOOTHNORMALS);
+		if(checked) {
+			CheckDlgButton(hwnd,IDC_CB_SMOOTHNORMALS,BST_UNCHECKED);
+			modelGL.changeSmoothMode(0);
+			modelGL.changeRecalcNormalsFlg();
+		}
+		else {
+			CheckDlgButton(hwnd,IDC_CB_SMOOTHNORMALS,BST_CHECKED);
+			modelGL.changeSmoothMode(1);
+			modelGL.changeRecalcNormalsFlg();
+		}
+		break;
+	case IDC_CB_TEXTURE:
+		checked = IsDlgButtonChecked(hwnd,IDC_CB_TEXTURE);
+		if(checked) {
+			CheckDlgButton(hwnd,IDC_CB_TEXTURE,BST_UNCHECKED);
+			modelGL.changeTextureMode(0);
+		}
+		else {
+			CheckDlgButton(hwnd,IDC_CB_TEXTURE,BST_CHECKED);
+			modelGL.changeTextureMode(1);
+		}
+		break;
 	}
+	updateControls();
 	return 0;
+}
+void glCtrl::updateControls() {
+
+	HWND hCBLighting(0), hCBShowNormals(0), hCBWireframe(0), hCBSmoothNormals(0), hCBTexturing(0);
+	hCBLighting = GetDlgItem(this->handle,IDC_CB_LIGHTING);
+	hCBShowNormals = GetDlgItem(this->handle,IDC_CB_SHOWNORMALS);
+	hCBSmoothNormals = GetDlgItem(this->handle,IDC_CB_SMOOTHNORMALS);
+	hCBWireframe = GetDlgItem(this->handle,IDC_CB_WIREFRAME);
+	hCBTexturing = GetDlgItem(this->handle,IDC_CB_TEXTURE);
+	if(modelGL.getSliceLoaded() && modelGL.getPathLoaded() && (true || modelGL.getBreaksLoaded())) {
+		Button_Enable(hCBShowNormals,TRUE);
+		Button_Enable(hCBWireframe,TRUE);
+		Button_Enable(hCBSmoothNormals,TRUE);
+		if(modelGL.getWireframe()) {
+			Button_Enable(hCBLighting,FALSE);
+			Button_Enable(hCBTexturing,FALSE);
+		}
+		else {
+			Button_Enable(hCBLighting,TRUE);
+			Button_Enable(hCBTexturing,TRUE);
+		}
+	}
+	else {
+		Button_Enable(hCBLighting,FALSE);
+		Button_Enable(hCBShowNormals,FALSE);
+		Button_Enable(hCBWireframe,FALSE);
+		Button_Enable(hCBTexturing,FALSE);
+		Button_Enable(hCBSmoothNormals,FALSE);
+	}
+
 }
 int glCtrl::wActivate(int aCmd,int minimized, HWND hWnd) {
 	int globRes = -1;

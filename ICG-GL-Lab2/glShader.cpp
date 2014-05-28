@@ -1,7 +1,10 @@
 #pragma warning(disable : 4996)
 #include "glShader.h"
-#include <stdio.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdarg>
+#include <sstream>
+#include <iterator>
+using namespace std;
 void glShader::infoMessage(LPCWSTR text) {
 	MessageBox(handle,text,INFO_MSG_TITLE, MB_OK | MB_ICONEXCLAMATION);
 }
@@ -62,13 +65,12 @@ void glShader::printShaderLog( GLuint &shader )
 		glGetShaderiv( shader, GL_INFO_LOG_LENGTH, &maxLength );
 		vector<GLchar> infoLog(maxLength,'\0');
 		LPSTR ilptr = &infoLog[0];
-
 		//Get info log
 		glGetShaderInfoLog( shader, maxLength, &infoLogLength, ilptr);
 		if( infoLogLength > 0 )
 		{
 			//Print Log
-			wsprintf(infoLogUnicode,L"%S",ilptr);
+			swprintf(infoLogUnicode,L"%S",ilptr);
 			infoMessage(infoLogUnicode);
 		}
 		infoLog.clear();
@@ -216,7 +218,7 @@ void glShader::setPipelineStages(GLbitfield inStages) {
 }
 GLboolean glShader::useProgram() {
 	//Use shader
-		GLint param;
+	GLint param;
 
 	if(!stagesSet && usePipeline) {
 		stages = 0;
@@ -287,7 +289,38 @@ bool glShader::link(GLuint *getProgID) {
 		programID = NULL;
 		return false;
 	}
-	if(getProgID != NULL)
+	else {
+		GLint attrLen, attrNum, writtenSymbols,varSize, varLoc;
+		GLenum varType;
+		vector<GLchar> nameBuf;
+		glGetProgramiv(programID,GL_ACTIVE_ATTRIBUTES,&attrNum);
+		glGetProgramiv(programID,GL_ACTIVE_ATTRIBUTE_MAX_LENGTH,&attrLen);
+		attributesLocs.clear();
+		attributesTypes.clear();
+		for(GLuint i = 0; i < (GLuint) attrNum; i++) {
+			nameBuf.resize(attrLen,'\0');
+			glGetActiveAttrib(programID,i,attrLen,&writtenSymbols,&varSize,&varType,&nameBuf[0]);
+			varLoc = glGetAttribLocation(programID,&nameBuf[0]);
+			attributesLocs.insert(pair<string,GLint>(string(&nameBuf[0]),varLoc));
+			attributesTypes.insert(pair<string,GLenum>(string(&nameBuf[0]),varType));
+			nameBuf.clear();
+		}
+		nameBuf.clear();
+		GLint unifLen, unifNum;
+		glGetProgramiv(programID,GL_ACTIVE_UNIFORMS,&unifNum);
+		glGetProgramiv(programID,GL_ACTIVE_UNIFORM_MAX_LENGTH,&unifLen);
+		uniformsLocs.clear();
+		uniformsTypes.clear();
+		for(GLuint i = 0; i < (GLuint) unifNum; i++) {
+			nameBuf.resize(unifLen,'\0');
+			glGetActiveUniform(programID,i,unifLen,&writtenSymbols,&varSize,&varType,&nameBuf[0]);
+			varLoc = glGetUniformLocation(programID,&nameBuf[0]);
+			uniformsLocs.insert(pair<string,GLint>(string(&nameBuf[0]),varLoc));
+			uniformsTypes.insert(pair<string,GLenum>(string(&nameBuf[0]),varType));
+			nameBuf.clear();
+		}
+	}
+	if(getProgID != NULL && programID != NULL)
 		*getProgID = programID;
 	return true;
 }
@@ -314,6 +347,306 @@ bool glShader::loadAndAttach(const shaderInfo *shaders) {
 }
 void glShader::bindFragDataOutput(const GLchar *outName) const {
 	glBindFragDataLocation(programID,0,outName);
+}
+GLint glShader::setUniform1fv(const GLchar *unifName,const GLfloat *v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_FLOAT)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform1fv(foundLoc->second,1,v);
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+GLint glShader::setUniform1f(const GLchar *unifName,const GLfloat v) const {
+	return setUniform1fv(unifName,&v);
+}
+GLint glShader::setUniform2fv(const GLchar *unifName,const glm::vec2 &v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_FLOAT_VEC2)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform2fv(foundLoc->second,1,glm::value_ptr(v));
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+GLint glShader::setUniform2f(const GLchar *unifName,const GLfloat v1, const GLfloat v2) const {
+	glm::vec2 v(v1,v2);
+	return setUniform2fv(unifName,v);
+}
+GLint glShader::setUniform3fv(const GLchar *unifName,const glm::vec3 &v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_FLOAT_VEC3)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform3fv(foundLoc->second,1,glm::value_ptr(v));
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+GLint glShader::setUniform3f(const GLchar *unifName,const GLfloat v1, const GLfloat v2, const GLfloat v3) const {
+	glm::vec3 v(v1,v2,v3);
+	return setUniform3fv(unifName,v);
+}
+GLint glShader::setUniform4fv(const GLchar *unifName,const glm::vec4 &v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_FLOAT_VEC4)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform4fv(foundLoc->second,1,glm::value_ptr(v));
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+GLint glShader::setUniform4f(const GLchar *unifName,const GLfloat v1, const GLfloat v2, const GLfloat v3,const GLfloat v4) const {
+	glm::vec4 v(v1,v2,v3,v4);
+	return setUniform4fv(unifName,v);
+}
+GLint glShader::setUniform1dv(const GLchar *unifName,const GLdouble *v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_DOUBLE)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform1dv(foundLoc->second,1,v);
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+GLint glShader::setUniform1d(const GLchar *unifName, const GLdouble v) const {
+	return setUniform1dv(unifName,&v);
+}
+GLint glShader::setUniform2dv(const GLchar *unifName,const glm::dvec2 &v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_DOUBLE_VEC2)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform2dv(foundLoc->second,1,glm::value_ptr(v));
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+
+GLint glShader::setUniform2d(const GLchar *unifName, const GLdouble v1, const GLdouble v2) const {
+	glm::dvec2 v(v1,v2);
+	return setUniform2dv(unifName,v);
+}
+GLint glShader::setUniform3dv(const GLchar *unifName,const glm::dvec3 &v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_DOUBLE_VEC3)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform3dv(foundLoc->second,1,glm::value_ptr(v));
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+GLint glShader::setUniform3d(const GLchar *unifName, const GLdouble v1, const GLdouble v2,const GLdouble v3) const {
+	glm::dvec3 v(v1,v2,v3);
+	return setUniform3dv(unifName,v);
+}
+GLint glShader::setUniform4dv(const GLchar *unifName,const glm::dvec4 &v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_DOUBLE_VEC4)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform4dv(foundLoc->second,1,glm::value_ptr(v));
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+GLint glShader::setUniform4d(const GLchar *unifName, const GLdouble v1, const GLdouble v2,const GLdouble v3, const GLdouble v4) const {
+	glm::dvec4 v(v1,v2,v3,v4);
+	return setUniform4dv(unifName,v);
+}
+GLint glShader::setUniform1iv(const GLchar *unifName,const GLint *v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_INT && foundType->second != GL_BOOL)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform1iv(foundLoc->second,1,v);
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+GLint glShader::setUniform1i(const GLchar *unifName,const GLint v) const {
+	return setUniform1iv(unifName,&v);
+}
+GLint glShader::setUniform2iv(const GLchar *unifName,const glm::ivec2 &v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_INT_VEC2)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform2iv(foundLoc->second,1,glm::value_ptr(v));
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+
+}
+GLint glShader::setUniform2i(const GLchar *unifName,const GLint v1,const GLint v2) const {
+	glm::ivec2 v(v1,v2);
+	return setUniform2iv(unifName,v);
+}
+GLint glShader::setUniform3iv(const GLchar *unifName,const glm::ivec3 &v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_INT_VEC3)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform3iv(foundLoc->second,1,glm::value_ptr(v));
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+}
+GLint glShader::setUniform3i(const GLchar *unifName,const GLint v1,const GLint v2,const GLint v3) const {
+	glm::ivec3 v(v1,v2,v3);
+	return setUniform3iv(unifName,v);
+}
+GLint glShader::setUniform4iv(const GLchar *unifName,const glm::ivec4 &v) const {
+	string uName(unifName);
+	map<string,GLenum>::const_iterator foundType;
+	map<string,GLint>::const_iterator foundLoc;
+	foundType = uniformsTypes.find(uName);
+	if(uniformsTypes.find(uName) == uniformsTypes.end()) {
+		return SV_NAME_MISMATCH;
+	}
+	else {
+		if(foundType->second != GL_INT_VEC4)
+			return SV_DATA_TYPE_MISMATCH_ERROR;
+		else {
+			foundLoc = uniformsLocs.find(uName);
+			if(foundLoc->second != -1)
+				glUniform4iv(foundLoc->second,1,glm::value_ptr(v));
+			else
+				return SV_POSITION_NEGATIVE_ERROR;
+		}
+	}
+	return SV_NO_ERROR;
+
+}
+GLint glShader::setUniform4i(const GLchar *unifName,const GLint v1,const GLint v2,const GLint v3,const GLint v4) const {
+	glm::ivec4 v(v1,v2,v3,v4);
+	return setUniform4iv(unifName,v);
 }
 glShader::~glShader(void)
 {

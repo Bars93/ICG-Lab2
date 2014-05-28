@@ -15,7 +15,7 @@ class WinApp
 	int x,y;
 	HWND handle, hBtnState;
 	// combo boxes handles
-	HWND hCBLighting, hCBTess, hCBShowNormals, hCBWireframe, hTBTessLevel;
+	HWND hCBLighting, hCBShowNormals, hCBWireframe, hCBSmoothNormals, hCBTexturing;
 	HWND hSTMSAA;
 	HDC winDC;
 	DEVMODE dmSettings;
@@ -33,7 +33,7 @@ class WinApp
 	ATOM WINAPI RegWindowClass();
 	void WINAPI UnRegWindowClass();
 	bool RecreateWindow();
-	void SetToDesktopCenter();
+	void setToDesktopCenter();
 	HICON loadIcon(INT id);
 	HCURSOR loadCursor(INT id);
 public:

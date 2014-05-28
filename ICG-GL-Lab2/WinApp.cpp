@@ -32,8 +32,6 @@ WinApp::WinApp(INT wWidth, INT wHeight,LPCWSTR szAppTitle,LPCWSTR szClassName, H
 	winActive(true),
 	fullscreen(false)
 {
-	ZeroMemory(&dmSettings,sizeof(DEVMODE));
-	EnumDisplaySettings(NULL,ENUM_CURRENT_SETTINGS,&dmSettings);
 }
 void WinApp::refresh() {
 	SendMessage(handle,WM_PAINT,0,0);	
@@ -52,7 +50,6 @@ ATOM WINAPI WinApp::RegWindowClass() {
 	WCE.hCursor       = LoadCursor (NULL,IDC_ARROW); 
 	WCE.lpszClassName = szWinClassName;
 	WCE.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1);
-	//WCE.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
 	globRes = RegisterClassEx(&WCE);
 	if(!globRes) {
 		ErrorMessage(L"Error register window class!");
@@ -75,27 +72,7 @@ bool WinApp::createWindow() {
 		InitCtrls.dwSize = sizeof(InitCtrls); //для контролов
 		InitCtrls.dwICC = ICC_WIN95_CLASSES; //для контролов
 		InitCommonControlsEx(&InitCtrls); //для контролов
-		if((MessageBox(handle,L"Запустить полноэкранный режим?",szTitle, MB_YESNO | MB_ICONQUESTION)) == IDYES) {
-			/*if(ChangeDisplaySettings(&dmSettings,CDS_FULLSCREEN) !=DISP_CHANGE_SUCCESSFUL) {
-				if(MessageBox(handle,L"Полноэкранный режим не доступен, продолжить в обычном?",szTitle, MB_YESNO | MB_ICONEXCLAMATION) == IDYES) {
-					fullscreen = false;
-				}
-				else {
-					return false;
-				}
-			}
-			else {*/
-				fullscreen = true;
-				width = dmSettings.dmPelsWidth;
-				height = dmSettings.dmPelsHeight;
-			/*}*/
-		}
-		if(fullscreen) {
-			handle = CreateWindowEx(dwFSStyleEx,szWinClassName,szTitle,dwFSStyle,0,0,width,height,NULL,(HMENU)menuHandle,hInst,(LPVOID)NULL);
-		}
-		else {
-			handle = CreateWindowEx(dwStyleEx,szWinClassName,szTitle,dwStyle,x,y,width,height,NULL,(HMENU)menuHandle,hInst,(LPVOID)NULL);
-		}
+		handle = CreateWindowEx(dwStyleEx,szWinClassName,szTitle,dwStyle,x,y,width,height,NULL,(HMENU)menuHandle,hInst,(LPVOID)NULL);
 		if(!handle) {
 			globRes = false;
 			ErrorMessage(L"Error window creation");
@@ -106,11 +83,12 @@ bool WinApp::createWindow() {
 				globRes = false;
 			}
 			//hBtnState = CreateWindowEx(NULL,L"BUTTON",L"Освещение",WS_CHILD | WS_VISIBLE, width - 170,10,140,25,handle,(HMENU)IDC_BUTTON_LIGHT,hInst,(LPVOID)0);
-			hCBLighting = CreateWindowEx(NULL,WC_BUTTON,L"Освещение", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 175,10,170,15,handle,(HMENU)IDC_CB_LIGHTING,hInst,(LPVOID)0);
-			hCBShowNormals = CreateWindowEx(NULL,WC_BUTTON,L"Отобразить нормали", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 175,30,170,15,handle,(HMENU)IDC_CB_SHOWNORMALS,hInst,(LPVOID)0);
-			hCBWireframe  = CreateWindowEx(NULL,WC_BUTTON,L"Wireframe", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 175,50,170,15,handle,(HMENU)IDC_CB_WIREFRAME,hInst,(LPVOID)0);
-			CheckDlgButton(hCBLighting,IDC_CB_SHOWNORMALS, BST_CHECKED);
-			if(!hCBLighting) {
+			hCBLighting = CreateWindowEx(NULL,WC_BUTTON,L"Освещение", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 195,10,190,15,handle,(HMENU)IDC_CB_LIGHTING,hInst,(LPVOID)0);
+			hCBShowNormals = CreateWindowEx(NULL,WC_BUTTON,L"Отобразить нормали", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 195,30,190,15,handle,(HMENU)IDC_CB_SHOWNORMALS,hInst,(LPVOID)0);
+			hCBWireframe  = CreateWindowEx(NULL,WC_BUTTON,L"Wireframe", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 195,50,190,15,handle,(HMENU)IDC_CB_WIREFRAME,hInst,(LPVOID)0);
+			hCBSmoothNormals  = CreateWindowEx(NULL,WC_BUTTON,L"Сглаживание нормалей", BS_CHECKBOX | WS_CHILD | WS_VISIBLE | BS_MULTILINE,width - 195,70,190,30,handle,(HMENU)IDC_CB_SMOOTHNORMALS,hInst,(LPVOID)0);
+			hCBTexturing = CreateWindowEx(NULL,WC_BUTTON,L"Текстурирование", BS_CHECKBOX | WS_CHILD | WS_VISIBLE,width - 195,110,190,15,handle,(HMENU)IDC_CB_TEXTURE,hInst,(LPVOID)0);
+			if(!hCBLighting || !hCBShowNormals || !hCBWireframe || !hCBSmoothNormals || !hCBTexturing) {
 				globRes = false;
 				ErrorMessage(L"Button creation failed");
 			}
@@ -129,6 +107,12 @@ void WinApp::updateTimer() {
 	long int CurrentTime = std::clock();
 	lastframeIval = float(CurrentTime-lastframeTime)/float(CLOCKS_PER_SEC);
 	lastframeTime = CurrentTime;
+}
+void WinApp::setToDesktopCenter() {
+	RECT descRect, winRect;
+	GetClientRect(HWND_DESKTOP,&descRect);
+	
+
 }
 void WinApp::mainLoop(MSG *msg) {
 	static WCHAR newSzTitle[256];
@@ -165,9 +149,13 @@ LRESULT CALLBACK WinApp::WndProcINT(HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
 		break;
 
 	case WM_SIZE:
-		MoveWindow(hCBLighting,LOWORD(lParam)-175,10,170,15,true);
-		MoveWindow(hCBShowNormals,LOWORD(lParam)-175,30,170,15,true);
-		MoveWindow(hCBWireframe,LOWORD(lParam)-175,50,170,15,true);
+		this->width = LOWORD(lParam);
+		this->height = HIWORD(lParam);
+		MoveWindow(hCBLighting,width - 195,10,190,15,true);
+		MoveWindow(hCBShowNormals,width - 195,30,190,15,true);
+		MoveWindow(hCBWireframe,width - 195,50,190,15,true);
+		MoveWindow(hCBSmoothNormals,width - 195,70,190,30,true);
+		MoveWindow(hCBTexturing,width - 195,110,190,15,true);
 		returnValue = ctrl.size(LOWORD(lParam), HIWORD(lParam), (int)wParam);    // width, height, type
 		break;
 
